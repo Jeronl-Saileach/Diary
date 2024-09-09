@@ -1,0 +1,2 @@
+# Diary
+for software methodology
