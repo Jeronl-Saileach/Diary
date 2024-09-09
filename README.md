@@ -1,5 +1,10 @@
 # Diary
 for software methodology
 
-hello
-nohello
+用户需求
+
+系统需求
+
+团队章程
+
+风险预估
