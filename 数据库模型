@@ -1,0 +1,11 @@
+数据库模型图 (Database Model Diagram)
+
+概述：
+
+数据库模型图展示了应用的数据结构，描述了应用如何存储日记、媒体、标签、分类等信息，以及它们之间的关系。
+包含的信息：
+日记条目 (DiaryEntry)：包括字段如entryID（条目ID）、title（标题）、content（内容）、date（日期）、media（媒体）、tags（标签）、location（位置）。
+媒体 (Media)：包括mediaID（媒体ID）、type（类型：照片、视频、文件）、filePath（文件路径）和与之关联的条目ID。
+标签 (Tags)：包括tagID（标签ID）、tagName（标签名称）、与之关联的条目ID。
+分类 (Categories)：包括categoryID（分类ID）、categoryName（分类名称）、与之关联的条目ID。
+用户设置 (UserSettings)：包括userID、passwordProtection（密码保护）、themePreference（主题偏好）、cloudSyncStatus（云同步状态）。
