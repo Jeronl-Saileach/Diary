@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/profile"
+    android:padding="16dp">
+
+
+<ScrollView
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:layout_centerInParent="true">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/profileImage"
+        android:layout_width="122dp"
+        android:layout_height="122dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/circle_background"
+        android:scaleType="centerCrop"
+        android:src="@drawable/avatar" />
+
+    <TextView
+        android:id="@+id/profileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="John Doe"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <!-- 编辑按钮 -->
+    <TextView
+        android:id="@+id/profileEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="john.doe@example.com"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/profilePhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="+1 (123) 456-7890"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/editProfileButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Edit Profile"
+        android:layout_marginBottom="16dp" />
+
+    <!-- 返回按钮 -->
+    <Button
+        android:id="@+id/returnToMain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Return" />
+
+</LinearLayout>
+</ScrollView>
+    </RelativeLayout>
