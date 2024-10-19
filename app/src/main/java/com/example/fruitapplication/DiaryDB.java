@@ -1,10 +1,11 @@
 package com.example.fruitapplication;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DiaryDbHelper extends SQLiteOpenHelper {
+public class DiaryDB extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "diary.db";
     private static final int DATABASE_VERSION = 1;
 
@@ -20,7 +21,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DIARY_TIMESTAMP = "timestamp";
     public static final String COLUMN_USER_ID_FK = "user_id";
 
-    public DiaryDbHelper(Context context) {
+    public DiaryDB(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -50,6 +51,29 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DIARY);
 
         onCreate(db);
+    }
+
+    // Add user method
+    public void addUser(String username, String password) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USER_NAME, username);
+        values.put(COLUMN_USER_PASSWORD, password);
+
+        db.insert(TABLE_USERS, null, values);
+        db.close();
+    }
+
+    // Add diary entry method
+    public void addDiaryEntry(String title, String content, long userId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_DIARY_TITLE, title);
+        values.put(COLUMN_DIARY_CONTENT, content);
+        values.put(COLUMN_USER_ID_FK, userId);
+
+        db.insert(TABLE_DIARY, null, values);
+        db.close();
     }
 
 }
