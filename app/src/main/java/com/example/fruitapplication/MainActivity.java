@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.smdiary.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,6 +19,10 @@ public class MainActivity extends AppCompatActivity {
         Button viewProfileButton = findViewById(R.id.viewProfileButton);
         Button editSettingButton = findViewById(R.id.editSettingButton);
         ListView diaryListView = findViewById(R.id.diaryListView);
+
+        // Test add diary entry
+        DiaryDBHelper dbHelper = new DiaryDBHelper(this);
+        dbHelper.addDiaryEntry("Test Title", "This is a test entry to check if the database is working fine.", 1);
 
         // 处理 New Diary Entry 按钮点击
         newDiaryEntryButton.setOnClickListener(new View.OnClickListener() {
