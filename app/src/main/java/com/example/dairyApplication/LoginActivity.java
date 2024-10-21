@@ -1,4 +1,4 @@
-package com.example.fruitapplication; // 请确保包名和您的实际包名一致
+package com.example.dairyApplication; // 请确保包名和您的实际包名一致
 
 import android.content.Intent;
 import android.os.Bundle;

@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FruitApplication">
 
-        <activity android:name="com.example.fruitapplication.LoginActivity"
+        <activity android:name="com.example.dairyApplication.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,13 +18,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.example.fruitapplication.MainActivity"
+        <activity android:name="com.example.dairyApplication.MainActivity"
             android:exported="true" />
-        <activity android:name="com.example.fruitapplication.DiaryEntryActivity"
+        <activity android:name="com.example.dairyApplication.DiaryEntryActivity"
             android:exported="false" />
-        <activity android:name="com.example.fruitapplication.SettingsActivity"
+        <activity android:name="com.example.dairyApplication.SettingsActivity"
             android:exported="false" />
-        <activity android:name="com.example.fruitapplication.ProfileActivity"
+        <activity android:name="com.example.dairyApplication.ProfileActivity"
             android:exported="false" />
     </application>
 

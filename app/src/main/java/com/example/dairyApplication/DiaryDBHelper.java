@@ -1,4 +1,4 @@
-package com.example.fruitapplication;
+package com.example.dairyApplication;
 
 import android.content.ContentValues;
 import android.content.Context;
