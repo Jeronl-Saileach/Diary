@@ -16,9 +16,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + "Title text,"
             + "Content text,"
             + "Date integer,"
-            + "Media text,"
             + "Tags text,"
-            + "Location text)";
+            + "Location text,"
+            + "CategoryID integer,"
+            + "foreign key(CategoryID) references Categories(CategoryID))";
 
     // 创建 Media 表
     public static final String CREATE_Media = "create table Media("
@@ -33,17 +34,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String CREATE_Categories = "create table Categories("
             + "CategoryID integer primary key autoincrement,"
             + "CategoryName text,"
-            + "EntryID integer,"
-            + "foreign key(EntryID) references DiaryEntry(EntryId))";
+            + "UserID integer,"
+            + "foreign key(UserID) references UserSettings(UserID))";
 
     // 创建 UserSettings 表
     public static final String CREATE_UserSettings = "create table UserSettings("
             + "UserID integer primary key autoincrement,"
             + "PasswordProtection integer,"
             + "ThemePreference text,"
-            + "CloudSyncStatus integer,"
-            + "CategoryID integer,"
-            + "foreign key(CategoryID) references Categories(CategoryID))";
+            + "CloudSyncStatus integer)";
 
     private Context mContext;
 
