@@ -31,7 +31,7 @@ public class DatabaseActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this, "Dairy.db", null, 1);
 
         // 获取按钮并设置点击事件
-        Button createDatabase=(Button) findViewById(R.id.create_database);
+        Button createDatabase= findViewById(R.id.create_database);
         createDatabase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

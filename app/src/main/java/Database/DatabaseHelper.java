@@ -28,12 +28,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + "EntryID integer,"
             + "foreign key(EntryID) references DiaryEntry(EntryId))";
 
-    // 创建 Tags 表
-    public static final String CREATE_Tags = "create table Tags("
-            + "TagID integer primary key autoincrement,"
-            + "TagName text,"
-            + "EntryID integer,"
-            + "foreign key(EntryID) references DiaryEntry(EntryId))";
 
     // 创建 Categories 表
     public static final String CREATE_Categories = "create table Categories("
@@ -47,7 +41,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + "UserID integer primary key autoincrement,"
             + "PasswordProtection integer,"
             + "ThemePreference text,"
-            + "CloudSyncStatus integer)";
+            + "CloudSyncStatus integer,"
+            + "CategoryID integer,"
+            + "foreign key(CategoryID) references Categories(CategoryID))";
 
     private Context mContext;
 
@@ -60,7 +56,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_DiaryEntry);
         db.execSQL(CREATE_Media);
-        db.execSQL(CREATE_Tags);
         db.execSQL(CREATE_Categories);
         db.execSQL(CREATE_UserSettings);
         Toast.makeText(mContext, "数据库创建成功", Toast.LENGTH_SHORT).show(); // 提示用户数据库创建成功
