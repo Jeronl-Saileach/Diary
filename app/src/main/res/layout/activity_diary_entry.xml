@@ -5,20 +5,35 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- 返回按钮 -->
     <Button
         android:id="@+id/returnToMain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Return" />
+        android:text="返回" /> <!-- 确保这里没有额外的文本或其他字符 -->
 
+    <!-- 日记内容输入框 -->
     <EditText
         android:id="@+id/diaryContent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:hint="Write your diary here"
+        android:layout_height="0dp"
+        android:hint="在此编写日记"
         android:gravity="top"
-        android:inputType="textMultiLine" />
+        android:inputType="textMultiLine"
+        android:layout_weight="1" />
 
+    <!-- 自定义样式按钮 -->
+    <Button
+        android:id="@+id/customizeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="自定义样式" />
 
+    <!-- 保存条目按钮 -->
+    <Button
+        android:id="@+id/saveEntryButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="保存条目" />
 
 </LinearLayout>

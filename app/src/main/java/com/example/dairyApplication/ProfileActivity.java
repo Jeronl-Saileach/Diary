@@ -9,21 +9,22 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.smdiary.R;
 
+// 个人活动
 public class ProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_profile); // 设置布局
 
-        Button returnToMain = findViewById(R.id.returnToMain);
+        Button returnToMain = findViewById(R.id.returnToMain); // 获取返回按钮
 
-        // 处理 Return 按钮点击
+        // 处理返回按钮点击事件
         returnToMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
-                startActivity(intent);
+                startActivity(intent); // 跳转回主活动
             }
         });
     }

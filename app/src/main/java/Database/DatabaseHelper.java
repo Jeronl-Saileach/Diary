@@ -7,10 +7,11 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+// 数据库助手类
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     // 创建 DiaryEntry 表
-    public static final String CREATE_DairyEntry ="create table DairyEntry("
+    public static final String CREATE_DiaryEntry = "create table DiaryEntry("
             + "EntryId integer primary key autoincrement,"
             + "Title text,"
             + "Content text,"
@@ -57,16 +58,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_DairyEntry);
+        db.execSQL(CREATE_DiaryEntry);
         db.execSQL(CREATE_Media);
         db.execSQL(CREATE_Tags);
         db.execSQL(CREATE_Categories);
         db.execSQL(CREATE_UserSettings);
-        Toast.makeText(mContext,"Create Succeeded", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "数据库创建成功", Toast.LENGTH_SHORT).show(); // 提示用户数据库创建成功
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        // 在此实现版本更新时的表更改逻辑
     }
 }

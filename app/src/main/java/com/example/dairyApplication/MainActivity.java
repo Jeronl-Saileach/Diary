@@ -5,49 +5,52 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.smdiary.R;
 
+// 主活动
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main); // 设置布局
 
-        Button newDiaryEntryButton = findViewById(R.id.newDiaryEntryButton);
-        Button viewProfileButton = findViewById(R.id.viewProfileButton);
-        Button editSettingButton = findViewById(R.id.editSettingButton);
-        ListView diaryListView = findViewById(R.id.diaryListView);
+        Button newDiaryEntryButton = findViewById(R.id.newDiaryEntryButton); // 获取新日记条目按钮
+        Button viewProfileButton = findViewById(R.id.viewProfileButton); // 获取查看个人页面按钮
+        Button editSettingButton = findViewById(R.id.editSettingButton); // 获取编辑设置按钮
+        ListView diaryListView = findViewById(R.id.diaryListView); // 获取日记列表视图
 
-        // Test add diary entry
+        // 添加日记条目的临时示例
         DiaryDBHelper dbHelper = new DiaryDBHelper(this);
-        dbHelper.addDiaryEntry("Test Title", "This is a test entry to check if the database is working fine.", 1);
+        dbHelper.addDiaryEntry("测试标题", "这是一个测试条目，用来确认数据库工作正常。", 1);
 
-        // 处理 New Diary Entry 按钮点击
+        // 处理新日记条目按钮点击事件
         newDiaryEntryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, DiaryEntryActivity.class);
-                startActivity(intent);
+                startActivity(intent); // 启动新日记条目活动
             }
         });
 
-        // 处理 View Profile 按钮点击
+        // 处理查看个人页面按钮点击事件
         viewProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                startActivity(intent);
+                startActivity(intent); // 启动个人页面活动
             }
         });
 
-        // 处理 Edit Setting 按钮点击
+        // 处理编辑设置按钮点击事件
         editSettingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
+                startActivity(intent); // 启动设置活动
             }
         });
     }
