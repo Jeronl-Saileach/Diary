@@ -23,10 +23,6 @@ public class MainActivity extends AppCompatActivity {
         Button editSettingButton = findViewById(R.id.editSettingButton); // 获取编辑设置按钮
         ListView diaryListView = findViewById(R.id.diaryListView); // 获取日记列表视图
 
-        // 添加日记条目的临时示例
-        DiaryDBHelper dbHelper = new DiaryDBHelper(this);
-        dbHelper.addDiaryEntry("测试标题", "这是一个测试条目，用来确认数据库工作正常。", 1);
-
         // 处理新日记条目按钮点击事件
         newDiaryEntryButton.setOnClickListener(new View.OnClickListener() {
             @Override
