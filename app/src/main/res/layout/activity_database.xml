@@ -1,24 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <Button
-        android:id = "@+id/create_database"
+        android:id="@+id/testInsertButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text = "Create database"/>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id = "@+id/add_data"
-        android:text="Add data"/>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id = "@+id/query_data"
-        android:text="Query data"/>
+        android:text="insertDiaryEntry" />
 
+    <Button
+        android:id="@+id/testDeleteButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="DeleteById" />
+
+    <Button
+        android:id="@+id/testDeleteButtonC"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="DeleteByCondition" />
+
+    <Button
+        android:id="@+id/testUpdateButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Update" />
+
+    <Button
+        android:id="@+id/testQueryButtonA"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="queryAllDiaryEntries" />
+
+    <Button
+        android:id="@+id/testQueryButtonE"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="queryDiaryEntries" />
 
 </LinearLayout>

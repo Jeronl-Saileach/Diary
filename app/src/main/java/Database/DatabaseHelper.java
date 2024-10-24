@@ -3,65 +3,101 @@ package Database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+
+/**
+  *我重新完善了此类，即构建数据库以及数据库中的表
+  *此外，我把UserSettings 表中的passwordprotection改为了password
+ */
 // 数据库助手类
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    // 创建 DiaryEntry 表
-    public static final String CREATE_DiaryEntry = "create table DiaryEntry("
-            + "EntryId integer primary key autoincrement,"
-            + "Title text,"
-            + "Content text,"
-            + "Date integer,"
-            + "Tags text,"
-            + "Location text,"
-            + "CategoryID integer,"
-            + "foreign key(CategoryID) references Categories(CategoryID))";
+    // 数据库名字及版本
+    private static final String DATABASE_NAME = "diary.db";
+    private static final int DATABASE_VERSION = 1;
 
-    // 创建 Media 表
-    public static final String CREATE_Media = "create table Media("
-            + "MediaID integer primary key autoincrement,"
-            + "Type text,"
-            + "FilePath text,"
-            + "EntryID integer,"
-            + "foreign key(EntryID) references DiaryEntry(EntryId))";
+    // DiaryEntry 表常量
+    public static final String TABLE_DIARY_ENTRY = "DiaryEntry";
+    public static final String COLUMN_ENTRY_ID = "EntryId";
+    public static final String COLUMN_TITLE = "Title";
+    public static final String COLUMN_CONTENT = "Content";
+    public static final String COLUMN_DATE = "Date";
+    public static final String COLUMN_TAGS = "Tags";
+    public static final String COLUMN_LOCATION = "Location";
+    public static final String COLUMN_CATEGORY_ID = "CategoryID";
 
+    // Media 表常量
+    public static final String TABLE_MEDIA = "Media";
+    public static final String COLUMN_MEDIA_ID = "MediaID";
+    public static final String COLUMN_TYPE = "Type";
+    public static final String COLUMN_FILE_PATH = "FilePath";
+    public static final String COLUMN_ENTRY_ID_FK = "EntryID";
 
-    // 创建 Categories 表
-    public static final String CREATE_Categories = "create table Categories("
-            + "CategoryID integer primary key autoincrement,"
-            + "CategoryName text,"
-            + "UserID integer,"
-            + "foreign key(UserID) references UserSettings(UserID))";
+    // Categories 表常量
+    public static final String TABLE_CATEGORIES = "Categories";
+    public static final String COLUMN_CATEGORY_NAME = "CategoryName";
+    public static final String COLUMN_USER_ID_FK = "UserID";
 
-    // 创建 UserSettings 表
-    public static final String CREATE_UserSettings = "create table UserSettings("
-            + "UserID integer primary key autoincrement,"
-            + "PasswordProtection integer,"
-            + "ThemePreference text,"
-            + "CloudSyncStatus integer)";
+    // UserSettings 表常量
+    public static final String TABLE_USER_SETTINGS = "UserSettings";
+    public static final String COLUMN_USER_ID = "UserID";
+    public static final String COLUMN_PASSWORD = "Password";
+    public static final String COLUMN_THEME_PREFERENCE = "ThemePreference";
+    public static final String COLUMN_CLOUD_SYNC_STATUS = "CloudSyncStatus";
 
-    private Context mContext;
+    // SQL 创建表语句
+    private static final String CREATE_DIARY_ENTRY = "CREATE TABLE " + TABLE_DIARY_ENTRY + " ("
+            + COLUMN_ENTRY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + COLUMN_TITLE + " TEXT, "
+            + COLUMN_CONTENT + " TEXT, "
+            + COLUMN_DATE + " INTEGER, "
+            + COLUMN_TAGS + " TEXT, "
+            + COLUMN_LOCATION + " TEXT, "
+            + COLUMN_CATEGORY_ID + " INTEGER, "
+            + "FOREIGN KEY(" + COLUMN_CATEGORY_ID + ") REFERENCES "
+            + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY_ID + "))";
 
-    public DatabaseHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
-        mContext = context;
+    private static final String CREATE_MEDIA = "CREATE TABLE " + TABLE_MEDIA + " ("
+            + COLUMN_MEDIA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + COLUMN_TYPE + " TEXT, "
+            + COLUMN_FILE_PATH + " TEXT, "
+            + COLUMN_ENTRY_ID_FK + " INTEGER, "
+            + "FOREIGN KEY(" + COLUMN_ENTRY_ID_FK + ") REFERENCES "
+            + TABLE_DIARY_ENTRY + "(" + COLUMN_ENTRY_ID + "))";
+
+    private static final String CREATE_CATEGORIES = "CREATE TABLE " + TABLE_CATEGORIES + " ("
+            + COLUMN_CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + COLUMN_CATEGORY_NAME + " TEXT, "
+            + COLUMN_USER_ID_FK + " INTEGER, "
+            + "FOREIGN KEY(" + COLUMN_USER_ID_FK + ") REFERENCES "
+            + TABLE_USER_SETTINGS + "(" + COLUMN_USER_ID + "))";
+
+    private static final String CREATE_USER_SETTINGS = "CREATE TABLE " + TABLE_USER_SETTINGS + " ("
+            + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + COLUMN_PASSWORD + " INTEGER, "
+            + COLUMN_THEME_PREFERENCE + " TEXT, "
+            + COLUMN_CLOUD_SYNC_STATUS + " INTEGER)";
+
+    public DatabaseHelper(@Nullable Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_DiaryEntry);
-        db.execSQL(CREATE_Media);
-        db.execSQL(CREATE_Categories);
-        db.execSQL(CREATE_UserSettings);
-        Toast.makeText(mContext, "数据库创建成功", Toast.LENGTH_SHORT).show(); // 提示用户数据库创建成功
+        db.execSQL(CREATE_USER_SETTINGS);
+        db.execSQL(CREATE_CATEGORIES);
+        db.execSQL(CREATE_DIARY_ENTRY);
+        db.execSQL(CREATE_MEDIA);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // 在此实现版本更新时的表更改逻辑
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MEDIA);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DIARY_ENTRY);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER_SETTINGS);
+        onCreate(db);
     }
 }
