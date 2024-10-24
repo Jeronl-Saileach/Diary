@@ -139,7 +139,7 @@ public class DatabaseActivity extends AppCompatActivity {
             long entryId = 1;
             String title = "DairyEntry的更新测试";
             String content = "主要的内容是要测试dairyentry中的改方法是否能够正常实现";
-            long date = 2024-10-24;
+            long date = 20241024;
             String tags = "测试";
             String location = "四教";
             int categoryId = 2;
