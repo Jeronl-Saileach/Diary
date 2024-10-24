@@ -26,6 +26,8 @@
             android:exported="false" />
         <activity android:name="com.example.dairyApplication.ProfileActivity"
             android:exported="false" />
+        <activity android:name="com.example.dairyApplication.testDatabase"
+            android:exported="false" />
         <activity android:name="Database.DatabaseActivity"
             android:exported="true" />
     </application>

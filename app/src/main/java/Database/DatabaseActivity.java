@@ -5,14 +5,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.smdiary.R;
-
-import Database.DatabaseHelper;
-import Database.DatabaseManager;
 
 public class DatabaseActivity extends AppCompatActivity {
 
@@ -21,7 +16,7 @@ public class DatabaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_database);
+        setContentView(R.layout.activity_database_test);
 
         databaseManager = new DatabaseManager(this);
 
@@ -85,7 +80,6 @@ public class DatabaseActivity extends AppCompatActivity {
             String tags = "测试";
             String location = "四教";
             int categoryId = 1;
-
             long newEntryId = databaseManager.insertDiaryEntry(id, title, content, date, tags, location, categoryId);
             if (newEntryId != -1) {
                 Toast.makeText(this, "插入成功，ID: " + newEntryId, Toast.LENGTH_SHORT).show();
@@ -117,7 +111,6 @@ public class DatabaseActivity extends AppCompatActivity {
     private void testDeleteByCondition() {
         try {
             databaseManager.open();
-            // 条件删除示例：删除所有标签为 '测试' 的条目
             String selection = DatabaseHelper.COLUMN_TAGS + " = ?";
             String[] selectionArgs = {"测试"};
             int rowsDeleted = databaseManager.deleteDiaryEntryByCondition(selection, selectionArgs);
@@ -143,7 +136,6 @@ public class DatabaseActivity extends AppCompatActivity {
             String tags = "测试";
             String location = "四教";
             int categoryId = 2;
-
             int rowsUpdated = databaseManager.updateDiaryEntry(entryId, title, content, date, tags, location, categoryId);
             if (rowsUpdated > 0) {
                 Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
@@ -160,8 +152,6 @@ public class DatabaseActivity extends AppCompatActivity {
     private void testqueryAllDiaryEntries() {
         try {
             databaseManager.open();
-
-            // 查询所有条目
             Cursor cursor = databaseManager.getAllDiaryEntries();
             if (cursor != null) {
                 while (cursor.moveToNext()) {
@@ -172,19 +162,16 @@ public class DatabaseActivity extends AppCompatActivity {
                 }
                 cursor.close();
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             Log.e("DatabaseActivity", "查询操作错误", e);
-        } finally{
+        } finally {
             databaseManager.close();
         }
     }
 
-
     private void testqueryDiaryEntries() {
         try {
             databaseManager.open();
-
-            // 条件查询示例：查询特定标签下的所有条目
             String selection = DatabaseHelper.COLUMN_TAGS + " = ?";
             String[] selectionArgs = {"测试"};
             Cursor conditionCursor = databaseManager.queryDiaryEntries(selection, selectionArgs);

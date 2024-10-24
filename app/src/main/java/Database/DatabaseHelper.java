@@ -16,7 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // 数据库名字及版本
     private static final String DATABASE_NAME = "diary.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // DiaryEntry 表常量
     public static final String TABLE_DIARY_ENTRY = "DiaryEntry";
