@@ -50,7 +50,6 @@ android {
 }
 
 dependencies {
-
     implementation(files("libs/SQLiteStudioRemote.jar"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -59,7 +58,8 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    implementation(libs.androidx.material3) // 保留原有的 Material 3 依赖
+    implementation("com.google.android.material:material:1.9.0") // 添加 Material Components
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

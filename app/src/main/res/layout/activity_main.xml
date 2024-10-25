@@ -1,38 +1,55 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp">
 
-    <Button
-        android:id="@+id/newDiaryEntryButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="New Diary Entry" />
-
-    <Button
-        android:id="@+id/viewProfileButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View Profile" />
-
-    <Button
-        android:id="@+id/editSettingButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Edit Setting" />
-
-    <Button
-        android:id="@+id/testDatabaseButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Test Database" />
-
+    <!-- 日记列表 -->
     <ListView
         android:id="@+id/diaryListView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottomNavigation"
+        android:layout_marginBottom="16dp" />
 
-</LinearLayout>
+    <!-- 底部导航栏 -->
+    <LinearLayout
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_alignParentBottom="true">
+
+        <!-- 个人信息按钮（小人图标） -->
+        <ImageButton
+            android:id="@+id/viewProfileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/ic_profile"
+            android:contentDescription="View Profile"
+            android:padding="16dp" />
+
+        <!-- 设置按钮（小齿轮图标） -->
+        <ImageButton
+            android:id="@+id/editSettingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/ic_settings"
+            android:contentDescription="Edit Settings"
+            android:padding="16dp" />
+    </LinearLayout>
+
+    <!-- 添加日记的加号按钮 -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addDiaryEntryButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add"
+    android:contentDescription="Add Diary Entry" />
+
+</RelativeLayout>
