@@ -3,6 +3,7 @@ package Database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -16,7 +17,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // 数据库名字及版本
     private static final String DATABASE_NAME = "diary.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // DiaryEntry 表常量
     public static final String TABLE_DIARY_ENTRY = "DiaryEntry";
@@ -86,10 +87,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.d("DatabaseHelper", "Creating database tables...");
         db.execSQL(CREATE_USER_SETTINGS);
         db.execSQL(CREATE_CATEGORIES);
         db.execSQL(CREATE_DIARY_ENTRY);
         db.execSQL(CREATE_MEDIA);
+        Log.d("DatabaseHelper", "Database tables created successfully.");
     }
 
     @Override

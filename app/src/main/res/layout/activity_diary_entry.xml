@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -10,7 +11,14 @@
         android:id="@+id/returnToMain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="返回" /> <!-- 确保这里没有额外的文本或其他字符 -->
+        android:text="返回" />
+
+    <!-- 日记标题输入框 -->
+    <EditText
+        android:id="@+id/diaryTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="输入标题" />
 
     <!-- 日记内容输入框 -->
     <EditText
@@ -35,5 +43,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="保存条目" />
-
 </LinearLayout>
+
