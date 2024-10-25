@@ -30,7 +30,7 @@ public class DatabaseActivity extends AppCompatActivity {
         insertButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                testinsertDiaryEntry();
+                testInsertDiaryEntry();
             }
         });
 
@@ -58,29 +58,30 @@ public class DatabaseActivity extends AppCompatActivity {
         queryButtonA.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                testqueryAllDiaryEntries();
+                testQueryAllDiaryEntries();
             }
         });
 
         queryButtonE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                testqueryDiaryEntries();
+                testQueryDiaryEntries();
             }
         });
     }
 
-    private void testinsertDiaryEntry() {
+    private void testInsertDiaryEntry() {
         try {
             databaseManager.open();
-            long id = 1;
             String title = "DairyEntry的插入测试";
             String content = "主要的内容是要测试dairyentry中的增方法是否能够正常实现";
             long date = 20241024;
             String tags = "测试";
             String location = "四教";
             int categoryId = 1;
-            long newEntryId = databaseManager.insertDiaryEntry(id, title, content, date, tags, location, categoryId);
+
+            // 修改这里，移除 id 参数
+            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, tags, location, categoryId);
             if (newEntryId != -1) {
                 Toast.makeText(this, "插入成功，ID: " + newEntryId, Toast.LENGTH_SHORT).show();
             }
@@ -94,7 +95,7 @@ public class DatabaseActivity extends AppCompatActivity {
     private void testDeleteById() {
         try {
             databaseManager.open();
-            long entryId = 1;
+            long entryId = 1;  // 需要根据实际情况替换进来的 ID
             int rowsDeleted = databaseManager.deleteDiaryEntryById(entryId);
             if (rowsDeleted > 0) {
                 Toast.makeText(this, "ID删除成功", Toast.LENGTH_SHORT).show();
@@ -129,13 +130,14 @@ public class DatabaseActivity extends AppCompatActivity {
     private void testUpdate() {
         try {
             databaseManager.open();
-            long entryId = 1;
+            long entryId = 1;  // 需要根据实际情况替换进来的 ID
             String title = "DairyEntry的更新测试";
             String content = "主要的内容是要测试dairyentry中的改方法是否能够正常实现";
             long date = 20241024;
             String tags = "测试";
             String location = "四教";
             int categoryId = 2;
+
             int rowsUpdated = databaseManager.updateDiaryEntry(entryId, title, content, date, tags, location, categoryId);
             if (rowsUpdated > 0) {
                 Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
@@ -149,7 +151,7 @@ public class DatabaseActivity extends AppCompatActivity {
         }
     }
 
-    private void testqueryAllDiaryEntries() {
+    private void testQueryAllDiaryEntries() {
         try {
             databaseManager.open();
             Cursor cursor = databaseManager.getAllDiaryEntries();
@@ -169,7 +171,7 @@ public class DatabaseActivity extends AppCompatActivity {
         }
     }
 
-    private void testqueryDiaryEntries() {
+    private void testQueryDiaryEntries() {
         try {
             databaseManager.open();
             String selection = DatabaseHelper.COLUMN_TAGS + " = ?";

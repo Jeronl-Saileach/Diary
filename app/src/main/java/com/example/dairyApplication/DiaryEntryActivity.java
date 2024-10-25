@@ -18,7 +18,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.smdiary.R;
-
 import Database.DatabaseManager;
 
 public class DiaryEntryActivity extends AppCompatActivity {
@@ -82,8 +81,8 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
         long date = System.currentTimeMillis();
 
-        // 插入日记到数据库
-        long entryId = databaseManager.insertDiaryEntry(0, title, content, date, "无标签", "默认位置", 1);
+        // 插入日记到数据库，移除 entryId 参数，让数据库自动生成
+        long entryId = databaseManager.insertDiaryEntry(title, content, date, "无标签", "默认位置", 1);
         if (entryId != -1) {
             Toast.makeText(this, "日记保存成功", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(DiaryEntryActivity.this, MainActivity.class);
