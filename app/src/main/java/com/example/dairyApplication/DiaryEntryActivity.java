@@ -2,6 +2,7 @@ package com.example.dairyApplication;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -18,6 +19,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.smdiary.R;
+
+import Database.DatabaseHelper;
 import Database.DatabaseManager;
 
 public class DiaryEntryActivity extends AppCompatActivity {
@@ -25,6 +28,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
     private EditText diaryContent;
     private EditText diaryTitle;
     private DatabaseManager databaseManager;
+    private long entryId = -1;
     private String[] colors = {"红色", "绿色", "蓝色"};
 
     @Override
@@ -37,17 +41,23 @@ public class DiaryEntryActivity extends AppCompatActivity {
         Button returnToMain = findViewById(R.id.returnToMain);
         Button customizeButton = findViewById(R.id.customizeButton);
         Button saveEntryButton = findViewById(R.id.saveEntryButton);
+        Button deleteEntryButton = findViewById(R.id.deleteEntryButton);
 
         // 初始化数据库管理器
         databaseManager = new DatabaseManager(this);
         databaseManager.open();
 
+        // 获取传递的 entryId 参数并加载内容
+        entryId = getIntent().getLongExtra("entryId", -1);
+        if (entryId != -1) {
+            loadDiaryEntry(entryId);
+        }
+
         // 返回按钮点击事件
         returnToMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DiaryEntryActivity.this, MainActivity.class);
-                startActivity(intent);
+                finish(); // 直接返回上一个页面
             }
         });
 
@@ -66,6 +76,43 @@ public class DiaryEntryActivity extends AppCompatActivity {
                 saveDiaryEntry();
             }
         });
+
+        // 删除按钮点击事件
+        deleteEntryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (entryId != -1) {
+                    new AlertDialog.Builder(DiaryEntryActivity.this)
+                            .setTitle("确认删除")
+                            .setMessage("确定要删除这篇日记吗？删除后将无法恢复。")
+                            .setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    int rowsDeleted = databaseManager.deleteDiaryEntryById(entryId);
+                                    if (rowsDeleted > 0) {
+                                        Toast.makeText(DiaryEntryActivity.this, "日记删除成功", Toast.LENGTH_SHORT).show();
+                                        setResult(RESULT_OK); // 设置返回结果
+                                        finish(); // 关闭Activity
+                                    } else {
+                                        Toast.makeText(DiaryEntryActivity.this, "删除失败", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            })
+                            .setNegativeButton("取消", null)
+                            .show();
+                }
+            }
+        });
+    }
+
+    // 加载指定 ID 的日记内容
+    private void loadDiaryEntry(long entryId) {
+        Cursor cursor = databaseManager.queryDiaryEntries("EntryId = ?", new String[]{String.valueOf(entryId)});
+        if (cursor != null && cursor.moveToFirst()) {
+            diaryTitle.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TITLE)));
+            diaryContent.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CONTENT)));
+            cursor.close();
+        }
     }
 
     // 保存日记条目到数据库
@@ -81,14 +128,26 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
         long date = System.currentTimeMillis();
 
-        // 插入日记到数据库，移除 entryId 参数，让数据库自动生成
-        long entryId = databaseManager.insertDiaryEntry(title, content, date, "无标签", "默认位置", 1);
-        if (entryId != -1) {
-            Toast.makeText(this, "日记保存成功", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(DiaryEntryActivity.this, MainActivity.class);
-            startActivity(intent);
+        if (entryId == -1) {
+            // 新建日记
+            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, "无标签", "默认位置", 1);
+            if (newEntryId != -1) {
+                Toast.makeText(this, "日记保存成功", Toast.LENGTH_SHORT).show();
+                setResult(RESULT_OK); // 设置返回结果
+                finish();
+            } else {
+                Toast.makeText(this, "保存失败", Toast.LENGTH_SHORT).show();
+            }
         } else {
-            Toast.makeText(this, "保存失败", Toast.LENGTH_SHORT).show();
+            // 更新现有日记
+            int rowsUpdated = databaseManager.updateDiaryEntry(entryId, title, content, date, "无标签", "默认位置", 1);
+            if (rowsUpdated > 0) {
+                Toast.makeText(this, "日记更新成功", Toast.LENGTH_SHORT).show();
+                setResult(RESULT_OK); // 设置返回结果
+                finish();
+            } else {
+                Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -103,17 +162,15 @@ public class DiaryEntryActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0:
-                                diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14); // 小
+                                diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
                                 break;
                             case 1:
-                                diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18); // 中
+                                diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
                                 break;
                             case 2:
-                                diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22); // 大
+                                diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
                                 break;
                         }
-
-                        // 字体选择后，立即显示颜色选择对话框
                         showColorDialog();
                     }
                 });
@@ -138,15 +195,13 @@ public class DiaryEntryActivity extends AppCompatActivity {
                                 color = Color.BLUE;
                                 break;
                         }
-
-                        // 应用选择的颜色到选中的文本
                         applyColorToText(diaryContent.getText(), color);
                     }
                 });
         builder.create().show();
     }
 
-    // 应用选择的颜色到文本
+    // 应用选择的颜色到选中的文本
     private void applyColorToText(Editable text, int color) {
         int start = diaryContent.getSelectionStart();
         int end = diaryContent.getSelectionEnd();

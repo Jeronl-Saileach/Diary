@@ -1,49 +1,62 @@
 package com.example.dairyApplication;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ListView;
-
-import androidx.appcompat.app.AppCompatActivity;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.example.smdiary.R;
 import android.database.Cursor;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import java.util.ArrayList;
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.example.smdiary.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import android.view.View;
+import android.widget.ImageButton;
 
-import Database.DatabaseHelper;
 import Database.DatabaseManager;
 
-
-// 主活动
 public class MainActivity extends AppCompatActivity {
 
-    private DatabaseManager databaseManager;  // 用于与数据库交互
-    private ListView diaryListView;
+    private DatabaseManager databaseManager;
+    private RecyclerView diaryRecyclerView;
+    private static final int REQUEST_CODE_EDIT_DIARY = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        diaryListView = findViewById(R.id.diaryListView);  // 获取ListView
+        // 打开数据库连接
         databaseManager = new DatabaseManager(this);
-        databaseManager.open();  // 打开数据库连接
+        databaseManager.open();
 
+        diaryRecyclerView = findViewById(R.id.diaryListView);
         FloatingActionButton addDiaryEntryButton = findViewById(R.id.addDiaryEntryButton);
         ImageButton viewProfileButton = findViewById(R.id.viewProfileButton);
         ImageButton editSettingButton = findViewById(R.id.editSettingButton);
 
-        // 处理添加日记条目按钮点击事件
+        // 添加新日记按钮事件
         addDiaryEntryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, DiaryEntryActivity.class);
-                startActivity(intent);  // 启动新日记条目活动
+                startActivityForResult(intent, REQUEST_CODE_EDIT_DIARY); // 使用请求码启动Activity
+            }
+        });
+
+        // 个人信息按钮事件
+        viewProfileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // 设置按钮事件
+        editSettingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -52,27 +65,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadDiaryEntries() {
-        // 查询数据库中的所有日记条目
         Cursor cursor = databaseManager.getAllDiaryEntries();
-        ArrayList<String> diaryEntries = new ArrayList<>();
+        DiaryAdapter adapter = new DiaryAdapter(this, cursor, entryId -> {
+            Intent intent = new Intent(MainActivity.this, DiaryEntryActivity.class);
+            intent.putExtra("entryId", entryId); // 传递 entryId 到编辑页面
+            startActivityForResult(intent, REQUEST_CODE_EDIT_DIARY); // 使用请求码启动Activity
+        });
 
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                String title = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TITLE));
-                String content = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CONTENT));
-                diaryEntries.add("标题: " + title + "\n内容: " + content);
-            }
-            cursor.close();
+        diaryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        diaryRecyclerView.setAdapter(adapter);
+    }
+
+    // 刷新日记条目列表
+    private void refreshDiaryEntries() {
+        Cursor cursor = databaseManager.getAllDiaryEntries();
+        DiaryAdapter adapter = new DiaryAdapter(this, cursor, entryId -> {
+            Intent intent = new Intent(MainActivity.this, DiaryEntryActivity.class);
+            intent.putExtra("entryId", entryId); // 传递 entryId 到编辑页面
+            startActivityForResult(intent, REQUEST_CODE_EDIT_DIARY); // 使用请求码启动Activity
+        });
+        diaryRecyclerView.setAdapter(adapter);
+    }
+
+    // 处理Activity结果
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_EDIT_DIARY && resultCode == RESULT_OK) {
+            refreshDiaryEntries(); // 更新列表视图
         }
-
-        // 使用ArrayAdapter将数据绑定到ListView
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, diaryEntries);
-        diaryListView.setAdapter(adapter);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        databaseManager.close();  // 关闭数据库连接
+        if (databaseManager != null) {
+            databaseManager.close();  // 关闭数据库连接
+        }
     }
 }

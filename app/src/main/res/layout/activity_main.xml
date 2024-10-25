@@ -5,12 +5,13 @@
     android:padding="16dp">
 
     <!-- 日记列表 -->
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/diaryListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottomNavigation"
         android:layout_marginBottom="16dp" />
+
 
     <!-- 底部导航栏 -->
     <LinearLayout
