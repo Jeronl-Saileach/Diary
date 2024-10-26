@@ -62,7 +62,26 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
+        Button nextPageButton = findViewById(R.id.nextPage);
+        //进入下一页
+        // 测试按钮点击事件
+        nextPageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 直接跳转到 MainActivity
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
+
+
+
+
+
+
 
     private void insertTestUser(String username, String password) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();

@@ -45,5 +45,12 @@
             android:text="Register"
             android:layout_marginTop="16dp" />
 
+
+        <Button
+            android:id="@+id/nextPage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="nextPage"
+            android:layout_marginTop="16dp" />
     </LinearLayout>
 </RelativeLayout>
