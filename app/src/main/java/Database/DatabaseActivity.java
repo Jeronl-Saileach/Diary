@@ -192,4 +192,12 @@ public class DatabaseActivity extends AppCompatActivity {
             databaseManager.close();
         }
     }
+
+
+
+    private void testCheckingDiaryEntries(){
+
+    }
+
+
 }

@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.material3) // 保留原有的 Material 3 依赖
     implementation("com.google.android.material:material:1.9.0") // 添加 Material Components
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.recyclerview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -3,7 +3,6 @@ package Database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -17,7 +16,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // 数据库名字及版本
     private static final String DATABASE_NAME = "diary.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 6;
+
+    /*当你对修改数据库（Manager中）的方法做出改动之后，需要升级版本号以适应变化，
+    例如，但你修改完数据类型之后。需要将版本号从6--》7来表示改动，不然会出现报错*/
+
 
     // DiaryEntry 表常量
     public static final String TABLE_DIARY_ENTRY = "DiaryEntry";
@@ -76,8 +79,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + TABLE_USER_SETTINGS + "(" + COLUMN_USER_ID + "))";
 
     private static final String CREATE_USER_SETTINGS = "CREATE TABLE " + TABLE_USER_SETTINGS + " ("
-            + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + COLUMN_PASSWORD + " INTEGER, "
+            + COLUMN_USER_ID + " TEXT PRIMARY KEY, "
+            + COLUMN_PASSWORD + " TEXT, "
             + COLUMN_THEME_PREFERENCE + " TEXT, "
             + COLUMN_CLOUD_SYNC_STATUS + " INTEGER)";
 
@@ -87,12 +90,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d("DatabaseHelper", "Creating database tables...");
         db.execSQL(CREATE_USER_SETTINGS);
         db.execSQL(CREATE_CATEGORIES);
         db.execSQL(CREATE_DIARY_ENTRY);
         db.execSQL(CREATE_MEDIA);
-        Log.d("DatabaseHelper", "Database tables created successfully.");
     }
 
     @Override
