@@ -21,13 +21,15 @@
         <activity android:name="com.example.dairyApplication.MainActivity"
             android:exported="true" />
         <activity android:name="com.example.dairyApplication.DiaryEntryActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity android:name="com.example.dairyApplication.SettingsActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity android:name="com.example.dairyApplication.ProfileActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity android:name="com.example.dairyApplication.testDatabase"
-            android:exported="false" />
+            android:exported="true" />
+        <activity android:name="com.example.dairyApplication.RegisterActivity"
+            android:exported="true" />
         <activity android:name="Database.DatabaseActivity"
             android:exported="true" />
     </application>

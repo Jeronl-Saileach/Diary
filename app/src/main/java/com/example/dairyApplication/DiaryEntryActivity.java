@@ -20,6 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.smdiary.R;
 
+import java.util.Objects;
+
 import Database.DatabaseHelper;
 import Database.DatabaseManager;
 
@@ -33,6 +35,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Objects.requireNonNull(getSupportActionBar()).setTitle("SMDiary");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diary_entry);
 

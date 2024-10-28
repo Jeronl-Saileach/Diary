@@ -16,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.smdiary.R;
 
+import java.util.Objects;
+
 import Database.DatabaseHelper;
 
 public class LoginActivity extends AppCompatActivity {
@@ -24,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Objects.requireNonNull(getSupportActionBar()).setTitle("SMDiary");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -63,6 +66,27 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+
+
+
+        //用户注册界面
+        // LoginActivity.java - onCreate方法中添加以下代码
+        Button registerPageButton = findViewById(R.id.registerButton);
+        registerPageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+
+
+
+
+
+        //测试软件的时候用于进入下一页的代码
         Button nextPageButton = findViewById(R.id.nextPage);
         //进入下一页
         // 测试按钮点击事件
