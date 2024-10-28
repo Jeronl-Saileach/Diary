@@ -1,0 +1,357 @@
+@startuml
+package Database {
+    class DatabaseHelper {
+        - DATABASE_NAME : String
+        - DATABASE_VERSION : int
+
+        + TABLE_DIARY_ENTRY : String
+        + COLUMN_ENTRY_ID : String
+        + COLUMN_TITLE : String
+        + COLUMN_CONTENT : String
+        + COLUMN_DATE : String
+        + COLUMN_TAGS : String
+        + COLUMN_LOCATION : String
+        + COLUMN_CATEGORY_ID : String
+
+        + TABLE_MEDIA : String
+        + COLUMN_MEDIA_ID : String
+        + COLUMN_TYPE : String
+        + COLUMN_FILE_PATH : String
+        + COLUMN_ENTRY_ID_FK : String
+
+        + TABLE_CATEGORIES : String
+        + COLUMN_CATEGORY_NAME : String
+        + COLUMN_USER_ID_FK : String
+
+        + TABLE_USER_SETTINGS : String
+        + COLUMN_USER_ID : String
+        + COLUMN_PASSWORD : String
+        + COLUMN_THEME_PREFERENCE : String
+        + COLUMN_CLOUD_SYNC_STATUS : String
+
+        - CREATE_DIARY_ENTRY : String
+        - CREATE_MEDIA : String
+        - CREATE_CATEGORIES : String
+        - CREATE_USER_SETTINGS : String
+
+        + DatabaseHelper(context: Context)
+        + onCreate(db: SQLiteDatabase) : void
+        + onUpgrade(db: SQLiteDatabase, oldVersion: int, newVersion: int) : void
+
+    }
+}
+package Database {
+    class DatabaseManager {
+        - dbHelper : DatabaseHelper
+        - database : SQLiteDatabase
+
+        + DatabaseManager(context: Context)
+        + open() : void
+        + close() : void
+
+        + insertDiaryEntry(title: String, content: String, date: long, tags: String, location: String, categoryId: int) : long
+        + deleteDiaryEntryById(entryId: long) : int
+        + deleteDiaryEntryByCondition(selection: String, selectionArgs: String[]) : int
+        + updateDiaryEntry(entryId: long, title: String, content: String, date: long, tags: String, location: String, categoryId: int) : int
+        + getAllDiaryEntries() : Cursor
+        + queryDiaryEntries(selection: String, selectionArgs: String[]) : Cursor
+
+        + insertCategory(categoryName: String, userId: int) : long
+        + deleteCategory(categoryId: long) : int
+        + deleteCategoryByCondition(selection: String, selectionArgs: String[]) : int
+        + updateCategory(categoryId: long, categoryName: String, userId: int) : int
+        + getAllCategories() : Cursor
+        + queryCategories(selection: String, selectionArgs: String[]) : Cursor
+
+        + insertMedia(type: String, filePath: String, entryId: int) : long
+        + deleteMedia(mediaId: long) : int
+        + deleteMediaByCondition(selection: String, selectionArgs: String[]) : int
+        + updateMedia(mediaId: long, type: String, filePath: String, entryId: int) : int
+        + getAllMedia() : Cursor
+        + queryMedia(selection: String, selectionArgs: String[]) : Cursor
+
+        + insertUserSettings(password: String, themePreference: String, cloudSyncStatus: int) : long
+        + deleteUserSettings(userId: long) : int
+        + deleteUserSettingsByCondition(selection: String, selectionArgs: String[]) : int
+        + updateUserSettings(userId: long, password: String, themePreference: String, cloudSyncStatus: int) : int
+        + getAllUserSettings() : Cursor
+        + queryUserSettings(selection: String, selectionArgs: String[]) : Cursor
+    }
+}
+
+
+package Database {
+    class DatabaseActivity {
+        - DatabaseManager databaseManager
+
+        + onCreate(savedInstanceState: Bundle)
+        + testInsertDiaryEntry() : void
+        + testDeleteById() : void
+        + testDeleteByCondition() : void
+        + testUpdate() : void
+        + testQueryAllDiaryEntries() : void
+        + testQueryDiaryEntries() : void
+    }
+}
+
+Database.DatabaseActivity --> Database.DatabaseManager
+
+
+package com.example.dairyApplication {
+    class testDatabase {
+        - DatabaseManager databaseManager
+
+        + onCreate(savedInstanceState: Bundle)
+        + testInsertDiaryEntry() : void
+        + testDeleteById() : void
+        + testDeleteByCondition() : void
+        + testUpdate() : void
+        + testQueryAllDiaryEntries() : void
+        + testQueryDiaryEntries() : void
+    }
+}
+
+com.example.dairyApplication.testDatabase --> Database.DatabaseManager
+
+package com.example.dairyApplication {
+    class SettingsActivity {
+        + onCreate(savedInstanceState: Bundle)
+    }
+
+    note right of SettingsActivity::onCreate
+      - Setting layout : setContentView
+      - Initialize button : themeButton
+      - Initialize button : passwordProtectionButton
+      - Initialize button : cloudSyncButton
+      - Initialize button : returnToMain
+      - Setting onClickListener for returnToMain to return MainActivity
+    end note
+}
+
+package com.example.dairyApplication {
+    class RegisterActivity {
+        - DatabaseHelper dbHelper
+
+        + onCreate(savedInstanceState: Bundle)
+        + onDestroy()
+        - registerUser(username: String, password: String): boolean
+    }
+
+    class DatabaseHelper {
+        + getWritableDatabase(): SQLiteDatabase
+        + close()
+    }
+
+    RegisterActivity --> DatabaseHelper : uses
+    RegisterActivity --|> AppCompatActivity
+
+    note right of RegisterActivity::onCreate
+      - Initializes the database helper dbHelper
+      - Initializes the input field and the registration button
+      - Handle the Registration button click: Verify the input and try to register the user
+      - Processing return button Click: Call finish() to return
+    end note
+
+    note right of RegisterActivity::registerUser
+      - Get a writable database
+      - Create ContentValues and try to insert a new user
+      - Return true on successful insertion, false otherwise
+      - Catch exceptions and log errors
+    end note
+}
+
+SettingsActivity --|> AppCompatActivity
+
+com.example.dairyApplication.SettingsActivity ..> com.example.dairyApplication.MainActivity : <<create>>
+
+package com.example.dairyApplication {
+    class ProfileActivity {
+        + onCreate(savedInstanceState: Bundle)
+    }
+
+    ProfileActivity --|> AppCompatActivity
+
+    com.example.dairyApplication.ProfileActivity ..> com.example.dairyApplication.MainActivity : <<create>>
+
+    note right of ProfileActivity::onCreate
+      - Set the title to "SMDiary"
+      - Setting layout : activity_profile
+      - Gets and initializes the button : returnToMain
+      -Set the OnClickListener for the returnToMain button to start the MainActivity
+    end note
+}
+
+package com.example.dairyApplication {
+    class MainActivity {
+        - DatabaseManager databaseManager
+        - RecyclerView diaryRecyclerView
+        - DiaryAdapter adapter
+        - static final int REQUEST_CODE_EDIT_DIARY
+
+        + onCreate(savedInstanceState: Bundle)
+        + onActivityResult(requestCode: int, resultCode: int, data: Intent)
+        + onDestroy()
+
+        - loadDiaryEntries()
+        - searchDiaryEntries(query: String)
+    }
+
+    class DatabaseManager {
+        + open()
+        + close()
+        + getAllDiaryEntries(): Cursor
+        + queryDiaryEntries(selection: String, selectionArgs: String[]): Cursor
+    }
+
+    class DiaryAdapter {
+        // Assuming a constructor or method that matches usage
+    }
+
+    MainActivity "1" --> "1" DatabaseManager : implement
+    MainActivity "1" --> "1" RecyclerView : implement
+    MainActivity "1" --> "1" DiaryAdapter : implement
+    MainActivity --|> AppCompatActivity
+
+    MainActivity ..> DiaryEntryActivity : <<start>>
+    MainActivity ..> ProfileActivity : <<start>>
+    MainActivity ..> SettingsActivity : <<start>>
+    MainActivity ..> Intent : implement
+}
+
+note right of MainActivity::onCreate
+  - Setting title "SMDiary"
+  - Open database connection
+  - Initialize RecyclerView, SearchView, and buttons
+  - The OnClickListener for the set button is used to navigate to DiaryEntry, Profile, and Settings
+  - Loading diary entry
+  - Set the SearchView query listener
+end note
+
+package com.example.dairyApplication {
+    class LoginActivity {
+        - DatabaseHelper dbHelper
+
+        + onCreate(savedInstanceState: Bundle)
+        - insertTestUser(username: String, password: String)
+        - validateLogin(username: String, password: String): boolean
+        + onDestroy()
+    }
+
+    class DatabaseHelper {
+        + getReadableDatabase(): SQLiteDatabase
+        + getWritableDatabase(): SQLiteDatabase
+        + close()
+    }
+}
+    LoginActivity --|> AppCompatActivity
+    LoginActivity "1" --> "1" DatabaseHelper : implement
+
+    LoginActivity ..> MainActivity : <<start>>
+    LoginActivity ..> RegisterActivity : <<start>>
+    LoginActivity ..> Intent : implement
+    LoginActivity ..> SQLiteDatabase : implement
+
+    note right of LoginActivity::onCreate
+      - Setting title "SMDiary"
+      - Initializes the database helper
+      - Insert test user (development only)
+      - Initialize UI elements (EditText, Button)
+      - The login button checks the input and authenticates the user
+      - The Register button goes to the register screen
+      - Go directly to the Test button on the main page
+    end note
+
+
+    note bottom
+      - Read user information from the database
+      - Check whether the user name matches the password
+      - Return login verification results
+    end note
+
+package com.example.dairyApplication {
+    class DiaryEntryActivity {
+        - EditText diaryContent
+        - EditText diaryTitle
+        - DatabaseManager databaseManager
+        - long entryId = -1
+        - String[] colors
+        + onCreate(savedInstanceState: Bundle)
+        - loadDiaryEntry(entryId: long)
+        - saveDiaryEntry()
+        - showCustomizationDialog()
+        - showColorDialog()
+        - applyColorToText(text: Editable, color: int)
+        + onPause()
+        + onResume()
+    }
+
+    class DatabaseManager {
+        + open()
+        + close()
+        + queryDiaryEntries(selection: String, selectionArgs: String[]): Cursor
+        + insertDiaryEntry(title: String, content: String, date: long, tag: String, location: String, priority: int): long
+        + updateDiaryEntry(entryId: long, title: String, content: String, date: long, tag: String, location: String, priority: int): int
+        + deleteDiaryEntryById(entryId: long): int
+    }
+
+    DiaryEntryActivity --|> AppCompatActivity
+    DiaryEntryActivity "1" --> "1" DatabaseManager : implement
+
+    DiaryEntryActivity ..> AlertDialog : implement
+    DiaryEntryActivity ..> Color : implement
+    DiaryEntryActivity ..> Intent : implement
+
+    note right of DiaryEntryActivity::onCreate
+      - Setting title "SMDiary"
+      - Initializes UI elements (EditText, Button)
+      - Get entryId from Intent
+      - Load the journal entry (if entryId is valid)
+      - Return, Customize, Save, Delete button click event
+    end note
+
+    note right of DiaryEntryActivity::showCustomizationDialog
+      - Displays the font size selection dialog box
+      - Displays the color selection dialog box
+    end note
+
+    note right of DiaryEntryActivity::applyColorToText
+      - Apply text colors depending on the user
+      - Using ForegroundColorSpan
+    end note
+
+
+package com.example.dairyApplication {
+    class DiaryAdapter {
+        - Context context
+        - Cursor cursor
+        - OnItemClickListener listener
+        + DiaryAdapter(context: Context, cursor: Cursor, listener: OnItemClickListener)
+        + onCreateViewHolder(parent: ViewGroup, viewType: int): DiaryViewHolder
+        + onBindViewHolder(holder: DiaryViewHolder, position: int)
+        + getItemCount(): int
+        + <<interface>> OnItemClickListener {
+            + onItemClick(entryId: long)
+        }
+    }
+
+    class DiaryViewHolder {
+        TextView titleTextView
+        TextView dateTextView
+        TextView contentTextView
+
+        + DiaryViewHolder(itemView: View)
+    }
+
+    DiaryAdapter ..> RecyclerView.Adapter
+    DiaryAdapter ..> LayoutInflater
+    DiaryAdapter --> DiaryViewHolder
+    DiaryAdapter ..> SimpleDateFormat : implement
+    DiaryAdapter ..> View : implement
+    DiaryAdapter ..> ViewGroup : implement
+    DiaryAdapter ..> DatabaseHelper : implement
+    DiaryAdapter.OnItemClickListener ..|> interface
+    DiaryViewHolder ..> View : implement
+    TextView ..> android.widget : implement
+}
+
+@enduml
