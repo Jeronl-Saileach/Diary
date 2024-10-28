@@ -4,24 +4,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/profile"
     android:padding="16dp">
 
     <EditText
         android:id="@+id/registerUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="UesrName" />
+        android:hint="Username"
+        android:background="@drawable/edit_text_background"
+        android:padding="10dp" />
+
 
     <EditText
         android:id="@+id/registerPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="PassWord"
-        android:inputType="textPassword" />
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edit_text_background"
+        android:padding="10dp" />
+
 
     <Button
         android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Register" />
+        android:text="Register"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/goBackButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Back to login"
+        android:layout_marginTop="16dp" />
 </LinearLayout>

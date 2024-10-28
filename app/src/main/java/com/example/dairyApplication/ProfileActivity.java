@@ -9,11 +9,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.smdiary.R;
 
+import java.util.Objects;
+
 // 个人活动
 public class ProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Objects.requireNonNull(getSupportActionBar()).setTitle("SMDiary");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile); // 设置布局
 

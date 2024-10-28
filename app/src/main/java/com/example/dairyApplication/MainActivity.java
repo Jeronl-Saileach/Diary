@@ -16,6 +16,8 @@ import Database.DatabaseManager;
 
 import androidx.appcompat.widget.SearchView;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
 
     private DatabaseManager databaseManager;
@@ -25,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // 在 Activity 的 onCreate 方法中设置标题
+        Objects.requireNonNull(getSupportActionBar()).setTitle("SMDiary");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 

@@ -34,28 +34,32 @@ public class RegisterActivity extends AppCompatActivity {
         Button registerButton = findViewById(R.id.registerButton);
 
         // 注册按钮点击事件
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 获取用户名和密码，并去除空格
-                String username = usernameEditText.getText().toString().trim();
-                String password = passwordEditText.getText().toString().trim();
+        registerButton.setOnClickListener(v -> {
+            // 获取用户名和密码，并去除空格
+            String username = usernameEditText.getText().toString().trim();
+            String password = passwordEditText.getText().toString().trim();
 
-                // 检查用户名和密码是否为空
-                if (username.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(RegisterActivity.this, "请输入用户名和密码", Toast.LENGTH_SHORT).show();
+            // 检查用户名和密码是否为空
+            if (username.isEmpty() || password.isEmpty()) {
+                Toast.makeText(RegisterActivity.this, "请输入用户名和密码", Toast.LENGTH_SHORT).show();
+            } else {
+                // 注册用户成功则跳转到登录界面，失败则提示
+                if (registerUser(username, password)) {
+                    Toast.makeText(RegisterActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
                 } else {
-                    // 注册用户成功则跳转到登录界面，失败则提示
-                    if (registerUser(username, password)) {
-                        Toast.makeText(RegisterActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        Toast.makeText(RegisterActivity.this, "注册失败，用户名可能已存在", Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(RegisterActivity.this, "注册失败，用户名可能已存在", Toast.LENGTH_SHORT).show();
                 }
             }
+        });
+
+
+        Button backButton = findViewById(R.id.goBackButton);
+        backButton.setOnClickListener(v -> {
+            //返回上一页
+            finish();
         });
     }
 
