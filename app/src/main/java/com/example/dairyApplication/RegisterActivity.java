@@ -25,21 +25,27 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        // 初始化数据库助手
         dbHelper = new DatabaseHelper(this);
 
+        // 获取用户名和密码输入框及注册按钮
         EditText usernameEditText = findViewById(R.id.registerUsername);
         EditText passwordEditText = findViewById(R.id.registerPassword);
         Button registerButton = findViewById(R.id.registerButton);
 
+        // 注册按钮点击事件
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // 获取用户名和密码，并去除空格
                 String username = usernameEditText.getText().toString().trim();
                 String password = passwordEditText.getText().toString().trim();
 
+                // 检查用户名和密码是否为空
                 if (username.isEmpty() || password.isEmpty()) {
                     Toast.makeText(RegisterActivity.this, "请输入用户名和密码", Toast.LENGTH_SHORT).show();
                 } else {
+                    // 注册用户成功则跳转到登录界面，失败则提示
                     if (registerUser(username, password)) {
                         Toast.makeText(RegisterActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
@@ -53,26 +59,30 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    // 注册用户，将用户名和密码插入数据库
     private boolean registerUser(String username, String password) {
+        // 获取可写的数据库
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("UserID", username);
         values.put("Password", password);
 
         try {
+            // 尝试将新用户插入数据库
             long result = db.insert("UserSettings", null, values);
-            return result != -1; // 注册成功返回 true
+            return result != -1; // 插入成功返回 true
         } catch (Exception e) {
             Log.e("DBTest", "用户注册时出错", e);
             return false;
         } finally {
-            db.close();
+            db.close(); // 关闭数据库连接
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        dbHelper.close();
+        dbHelper.close(); // 释放数据库资源
     }
 }
+
