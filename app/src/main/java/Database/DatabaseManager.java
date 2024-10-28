@@ -39,9 +39,9 @@ public class DatabaseManager {
      * 后面几个表也是一样，之后不再赘述。
      */
     // DiaryEntry（增）
-    public long insertDiaryEntry(long entryId, String title, String content, long date, String tags, String location, int categoryId) {
+    public long insertDiaryEntry(String title, String content, long date, String tags, String location, int categoryId) {
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.COLUMN_ENTRY_ID, entryId); // 插入id
+        // 不需要添加 EntryId，因为它会自动生成
         values.put(DatabaseHelper.COLUMN_TITLE, title); // 插入标题
         values.put(DatabaseHelper.COLUMN_CONTENT, content); // 插入内容
         values.put(DatabaseHelper.COLUMN_DATE, date); // 插入日期
