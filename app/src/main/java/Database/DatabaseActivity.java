@@ -176,8 +176,8 @@ public class DatabaseActivity extends AppCompatActivity {
     private void testQueryDiaryEntries() {
         try {
             databaseManager.open();
-            String selection = DatabaseHelper.COLUMN_TAGS + " = ? And" + DatabaseHelper.COLUMN_CATEGORY_ID + " = ?";
-            String[] selectionArgs = {"测试","1"};
+            String selection = DatabaseHelper.COLUMN_TAGS + " = ?";
+            String[] selectionArgs = {"测试"};
             Cursor conditionCursor = databaseManager.queryDiaryEntries(selection, selectionArgs);
             if (conditionCursor != null) {
                 while (conditionCursor.moveToNext()) {
