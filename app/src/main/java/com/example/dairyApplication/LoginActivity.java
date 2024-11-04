@@ -56,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (validateLogin(username, password)) {
                         // 登录成功，跳转到主界面
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra("userID", username); // 传递用户ID
                         startActivity(intent);
                         finish();
                     } else {

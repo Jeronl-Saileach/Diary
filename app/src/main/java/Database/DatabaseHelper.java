@@ -6,21 +6,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
-
-/**
-  *我重新完善了此类，即构建数据库以及数据库中的表
-  *此外，我把UserSettings 表中的passwordprotection改为了password
- */
 // 数据库助手类
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     // 数据库名字及版本
     private static final String DATABASE_NAME = "diary.db";
-    private static final int DATABASE_VERSION = 7;
-
-    /*当你对修改数据库（Manager中）的方法做出改动之后，需要升级版本号以适应变化，
-    例如，但你修改完数据类型之后。需要将版本号从7--》8来表示改动，不然会出现报错*/
-
+    private static final int DATABASE_VERSION = 8; // 升级版本号以适应数据库结构的变化
 
     // DiaryEntry 表常量
     public static final String TABLE_DIARY_ENTRY = "DiaryEntry";
@@ -31,6 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TAGS = "Tags";
     public static final String COLUMN_LOCATION = "Location";
     public static final String COLUMN_CATEGORY_ID = "CategoryID";
+    public static final String COLUMN_USER_ID_FK = "UserID"; // 新增的UserID外键
 
     // Media 表常量
     public static final String TABLE_MEDIA = "Media";
@@ -42,7 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Categories 表常量
     public static final String TABLE_CATEGORIES = "Categories";
     public static final String COLUMN_CATEGORY_NAME = "CategoryName";
-    public static final String COLUMN_USER_ID_FK = "UserID";
+    // 删除了UserID外键常量
 
     // UserSettings 表常量
     public static final String TABLE_USER_SETTINGS = "UserSettings";
@@ -60,8 +52,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_TAGS + " TEXT, "
             + COLUMN_LOCATION + " TEXT, "
             + COLUMN_CATEGORY_ID + " INTEGER, "
+            + COLUMN_USER_ID_FK + " TEXT, " // 新增的UserID列
             + "FOREIGN KEY(" + COLUMN_CATEGORY_ID + ") REFERENCES "
-            + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY_ID + "))";
+            + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY_ID + "), "
+            + "FOREIGN KEY(" + COLUMN_USER_ID_FK + ") REFERENCES "
+            + TABLE_USER_SETTINGS + "(" + COLUMN_USER_ID + "))";
 
     private static final String CREATE_MEDIA = "CREATE TABLE " + TABLE_MEDIA + " ("
             + COLUMN_MEDIA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -73,10 +68,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_CATEGORIES = "CREATE TABLE " + TABLE_CATEGORIES + " ("
             + COLUMN_CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + COLUMN_CATEGORY_NAME + " TEXT, "
-            + COLUMN_USER_ID_FK + " INTEGER, "
-            + "FOREIGN KEY(" + COLUMN_USER_ID_FK + ") REFERENCES "
-            + TABLE_USER_SETTINGS + "(" + COLUMN_USER_ID + "))";
+            + COLUMN_CATEGORY_NAME + " TEXT)";
+    // 移除了UserID外键相关的代码
 
     private static final String CREATE_USER_SETTINGS = "CREATE TABLE " + TABLE_USER_SETTINGS + " ("
             + COLUMN_USER_ID + " TEXT PRIMARY KEY, "
@@ -98,10 +91,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // 如果旧版本数据库存在，则删除所有表
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MEDIA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DIARY_ENTRY);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER_SETTINGS);
+
+        // 重新创建表
         onCreate(db);
     }
 }

@@ -39,19 +39,22 @@ public class DatabaseManager {
      * 后面几个表也是一样，之后不再赘述。
      */
     // DiaryEntry（增）
+    // DiaryEntry（增）
     public long insertDiaryEntry(String title, String content, long date, String tags, String location, int categoryId) {
         ContentValues values = new ContentValues();
         // 不需要添加 EntryId，因为它会自动生成
-        values.put(DatabaseHelper.COLUMN_TITLE, title); // 插入标题
-        values.put(DatabaseHelper.COLUMN_CONTENT, content); // 插入内容
-        values.put(DatabaseHelper.COLUMN_DATE, date); // 插入日期
-        values.put(DatabaseHelper.COLUMN_TAGS, tags); // 插入标签
-        values.put(DatabaseHelper.COLUMN_LOCATION, location); // 插入位置
-        values.put(DatabaseHelper.COLUMN_CATEGORY_ID, categoryId); // 插入类别ID
+        values.put(DatabaseHelper.COLUMN_TITLE, title);
+        values.put(DatabaseHelper.COLUMN_CONTENT, content);
+        values.put(DatabaseHelper.COLUMN_DATE, date);
+        values.put(DatabaseHelper.COLUMN_TAGS, tags);
+        values.put(DatabaseHelper.COLUMN_LOCATION, location);
+        values.put(DatabaseHelper.COLUMN_CATEGORY_ID, categoryId);
 
-        // 插入数据到DiaryEntry表，并返回新行的ID
+        // 执行插入并返回新插入行的ID
         return database.insert(DatabaseHelper.TABLE_DIARY_ENTRY, null, values);
     }
+
+
 
     // DiaryEntry（删除）
     // 通过EntryId删除特定日记条目
@@ -185,7 +188,22 @@ public class DatabaseManager {
     /**
      * UserSettings的增删改查
      */
-    // UserSettings（增）
+
+
+    // UserSettings（通过id和密码增加用户）
+    public long addUserWithCredentials(int userId, String password) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_USER_ID, userId);        // 设置用户ID
+        values.put(DatabaseHelper.COLUMN_PASSWORD, password);     // 设置密码
+
+        // 其他字段暂时为空或默认值
+        values.putNull(DatabaseHelper.COLUMN_THEME_PREFERENCE);   // 主题偏好为空
+        values.put(DatabaseHelper.COLUMN_CLOUD_SYNC_STATUS, 0);   // 云同步状态默认为0
+
+        return database.insert(DatabaseHelper.TABLE_USER_SETTINGS, null, values);
+    }
+
+    // UserSettings（在设置中补充更多信息）
     public long insertUserSettings(String password, String themePreference, int cloudSyncStatus) {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_PASSWORD, password);
@@ -214,11 +232,28 @@ public class DatabaseManager {
         return database.update(DatabaseHelper.TABLE_USER_SETTINGS, values, DatabaseHelper.COLUMN_USER_ID + " = ?", new String[]{String.valueOf(userId)});
     }
 
-    // UserSettings（查）
+    // 以下三个方法为UserSettings（查）
     public Cursor getAllUserSettings() {
         return database.query(DatabaseHelper.TABLE_USER_SETTINGS, null, null, null, null, null, null);
     }
+
+
     public Cursor queryUserSettings(String selection, String[] selectionArgs) {
         return database.query(DatabaseHelper.TABLE_USER_SETTINGS, null, selection, selectionArgs, null, null, null);
     }
+
+
+    // 查询并检查用户的ID和密码是否存在
+    public boolean checkUserCredentials(String userId, String password) {
+        // 设置查询条件
+        String selection = DatabaseHelper.COLUMN_USER_ID + " = ? AND " + DatabaseHelper.COLUMN_PASSWORD + " = ?";
+        String[] selectionArgs = {userId, password};
+
+        // 查询数据库
+        try (Cursor cursor = queryUserSettings(selection, selectionArgs)) {
+            // 判断是否有结果，如果有则表示凭据有效
+            return cursor != null && cursor.getCount() > 0;
+        }
+    }
+
 }
