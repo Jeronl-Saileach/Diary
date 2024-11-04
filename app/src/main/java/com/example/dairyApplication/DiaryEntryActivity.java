@@ -32,12 +32,18 @@ public class DiaryEntryActivity extends AppCompatActivity {
     private DatabaseManager databaseManager;
     private long entryId = -1;
     private String[] colors = {"红色", "绿色", "蓝色"};
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Objects.requireNonNull(getSupportActionBar()).setTitle("SMDiary");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diary_entry);
+        // 获取Intent
+        Intent intent = getIntent();
+
+        // 从Intent中获取用户ID
+        userID = intent.getStringExtra("USER_ID");
 
         diaryContent = findViewById(R.id.diaryContent);
         diaryTitle = findViewById(R.id.diaryTitle);
@@ -133,7 +139,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
         if (entryId == -1) {
             // 新建日记
-            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, "无标签", "默认位置", 1);
+            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, "无标签", "默认位置", 1,userID);
             if (newEntryId != -1) {
                 Toast.makeText(this, "日记保存成功", Toast.LENGTH_SHORT).show();
                 setResult(RESULT_OK); // 设置返回结果
@@ -143,7 +149,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
             }
         } else {
             // 更新现有日记
-            int rowsUpdated = databaseManager.updateDiaryEntry(entryId, title, content, date, "无标签", "默认位置", 1);
+            int rowsUpdated = databaseManager.updateDiaryEntry(entryId, title, content, date, "无标签", "默认位置", 1,userID);
             if (rowsUpdated > 0) {
                 Toast.makeText(this, "日记更新成功", Toast.LENGTH_SHORT).show();
                 setResult(RESULT_OK); // 设置返回结果

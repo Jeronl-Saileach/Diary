@@ -38,22 +38,20 @@ public class DatabaseManager {
      * 其中，查询方法包含一个遍历所有属性查询，和依据任意一属性查询
      * 后面几个表也是一样，之后不再赘述。
      */
+
     // DiaryEntry（增）
-    // DiaryEntry（增）
-    public long insertDiaryEntry(String title, String content, long date, String tags, String location, int categoryId) {
+    public long insertDiaryEntry(String title, String content, long date, String tags, String location, int categoryId, String userId) {
         ContentValues values = new ContentValues();
-        // 不需要添加 EntryId，因为它会自动生成
         values.put(DatabaseHelper.COLUMN_TITLE, title);
         values.put(DatabaseHelper.COLUMN_CONTENT, content);
         values.put(DatabaseHelper.COLUMN_DATE, date);
         values.put(DatabaseHelper.COLUMN_TAGS, tags);
         values.put(DatabaseHelper.COLUMN_LOCATION, location);
         values.put(DatabaseHelper.COLUMN_CATEGORY_ID, categoryId);
+        values.put(DatabaseHelper.COLUMN_USER_ID_FK, userId);  // 新增的UserID列
 
-        // 执行插入并返回新插入行的ID
         return database.insert(DatabaseHelper.TABLE_DIARY_ENTRY, null, values);
     }
-
 
 
     // DiaryEntry（删除）
@@ -72,7 +70,7 @@ public class DatabaseManager {
 
 
     // DiaryEntry（改）
-    public int updateDiaryEntry(long entryId, String title, String content, long date, String tags, String location, int categoryId) {
+    public int updateDiaryEntry(long entryId, String title, String content, long date, String tags, String location, int categoryId, String userId) {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_TITLE, title);
         values.put(DatabaseHelper.COLUMN_CONTENT, content);
@@ -80,8 +78,8 @@ public class DatabaseManager {
         values.put(DatabaseHelper.COLUMN_TAGS, tags);
         values.put(DatabaseHelper.COLUMN_LOCATION, location);
         values.put(DatabaseHelper.COLUMN_CATEGORY_ID, categoryId);
+        values.put(DatabaseHelper.COLUMN_USER_ID_FK, userId);  // 更新时包括UserID
 
-        // 更新指定EntryId的记录，并返回受影响的行数
         return database.update(DatabaseHelper.TABLE_DIARY_ENTRY, values, DatabaseHelper.COLUMN_ENTRY_ID + " = ?", new String[]{String.valueOf(entryId)});
     }
 
@@ -104,15 +102,21 @@ public class DatabaseManager {
     //selection：这是一段SQL样式的条件语句（类似于WHERE子句，但不需要包含WHERE关键字本身）。该条件使用占位符（例如?）来表示需要填入具体值的位置
     //selectionArgs：这是一个字符串数组，与selection匹配。数组中的每个值将依次替换selection中的问号（?）占位符。
 
+    // 根据UserID查询DiaryEntry
+    public Cursor queryDiaryEntriesByUserId(String userId) {
+        String selection = DatabaseHelper.COLUMN_USER_ID_FK + " = ?";
+        String[] selectionArgs = new String[]{userId};
+        return database.query(DatabaseHelper.TABLE_DIARY_ENTRY, null, selection, selectionArgs, null, null, null);
+    }
+
 
     /**
-     * Category的增删改查
+     * Category的增删改查（注意，已经更新了增删改查方法，删除对于UserID的外键约束）
      */
     // Category（增）
-    public long insertCategory(String categoryName, int userId) {
+    public long insertCategory(String categoryName) {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_CATEGORY_NAME, categoryName);
-        values.put(DatabaseHelper.COLUMN_USER_ID_FK, userId);
 
         return database.insert(DatabaseHelper.TABLE_CATEGORIES, null, values);
     }
@@ -127,10 +131,9 @@ public class DatabaseManager {
     }
 
     // Category（改）
-    public int updateCategory(long categoryId, String categoryName, int userId) {
+    public int updateCategory(long categoryId, String categoryName) {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_CATEGORY_NAME, categoryName);
-        values.put(DatabaseHelper.COLUMN_USER_ID_FK, userId);
 
         return database.update(DatabaseHelper.TABLE_CATEGORIES, values, DatabaseHelper.COLUMN_CATEGORY_ID + " = ?", new String[]{String.valueOf(categoryId)});
     }
