@@ -56,4 +56,20 @@
         android:layout_margin="16dp"
         android:src="@drawable/ic_add"
         android:contentDescription="Add Diary Entry" />
+
+
+    <!-- 在这里我添加一个按钮和一个ImageView来显示背景图-->
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    <Button
+        android:id="@+id/selectImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="选择背景图"
+        android:layout_centerInParent="true" />
+
 </RelativeLayout>
