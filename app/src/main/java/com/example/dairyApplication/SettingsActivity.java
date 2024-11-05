@@ -13,19 +13,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.content.CursorLoader;
 
-import Database.DatabaseHelper;
 import Database.DatabaseManager;
 import com.example.smdiary.R;
 
 import java.util.Objects;
 
-// 设置活动
 public class SettingsActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_SELECT_IMAGE = 1;
     private DatabaseManager dbManager;
-
-
+    private Button passwordProtectionButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +33,11 @@ public class SettingsActivity extends AppCompatActivity {
         dbManager = new DatabaseManager(this);
         dbManager.open();
 
-        Button themeButton = findViewById(R.id.themeButton); // 获取主题按钮
-        Button passwordProtectionButton = findViewById(R.id.passwordProtectionButton); // 获取密码保护按钮
-        Button cloudSyncButton = findViewById(R.id.cloudSyncButton); // 获取云同步按钮
-        Button returnToMain = findViewById(R.id.returnToMain); // 获取返回按钮
+        Button themeButton = findViewById(R.id.themeButton);
+        passwordProtectionButton = findViewById(R.id.passwordProtectionButton);
+        Button cloudSyncButton = findViewById(R.id.cloudSyncButton);
+        Button returnToMain = findViewById(R.id.returnToMain);
 
-        // 处理返回按钮点击事件
         returnToMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,8 +46,6 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        // 这里可以添加按钮的点击事件来处理主题、密码保护及云同步逻辑
-
         // 处理主题按钮点击事件
         themeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,11 +53,25 @@ public class SettingsActivity extends AppCompatActivity {
                 selectImage();
             }
         });
+
+        setupPasswordButton(); // 设置密码保护按钮点击事件
     }
+
+    private void setupPasswordButton() {
+        passwordProtectionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SettingsActivity.this, ChangePasswordActivity.class);
+                startActivity(intent); // 跳转到密码修改页面
+            }
+        });
+    }
+
     private void selectImage() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -73,12 +81,14 @@ public class SettingsActivity extends AppCompatActivity {
             saveSelectedImageUri(selectedImageUri);
         }
     }
+
     private void saveSelectedImageUri(Uri selectedImageUri) {
         String imagePath = getRealPathFromURI(selectedImageUri);
-        String userId = "user1"; // 假设用户ID为"user1"，实际应用中应从登录信息获取
-        dbManager.updateUserSettings(Long.parseLong(userId), "", imagePath, 0); // 更新主题偏好
+        String userId = "user1"; // 确保用户ID是一个字符串
+        dbManager.updateUserSettings(userId, "", imagePath, 0); // 使用字符串作为ID
         dbManager.close();
     }
+
 
     private String getRealPathFromURI(Uri contentUri) {
         String[] proj = {MediaStore.Images.Media.DATA};
@@ -91,9 +101,3 @@ public class SettingsActivity extends AppCompatActivity {
         return result;
     }
 }
-
-
-
-
-
-

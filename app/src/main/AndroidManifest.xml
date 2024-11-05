@@ -8,7 +8,7 @@
         android:label="@string/Diary_Application"
         android:roundIcon="@mipmap/img_1"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DiaryApplication">>
+        android:theme="@style/Theme.DiaryApplication">
 
         <activity android:name="com.example.dairyApplication.LoginActivity"
             android:exported="true">
@@ -32,6 +32,11 @@
             android:exported="true" />
         <activity android:name="Database.DatabaseActivity"
             android:exported="true" />
+
+        <!-- 添加 ChangePasswordActivity 的声明 -->
+        <activity android:name="com.example.dairyApplication.ChangePasswordActivity"
+            android:exported="true" />
+
     </application>
 
 </manifest>
