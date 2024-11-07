@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 /**
  * 此类主要是所有增删改查的方法
@@ -82,15 +83,20 @@ public class DatabaseManager {
         return database.query(DatabaseHelper.TABLE_DIARY_ENTRY, null, selection, selectionArgs, null, null, null);
     }
 
-    // UserSettings（改）
     public int updateUserSettings(String userId, String password, String themePreference, int cloudSyncStatus) {
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.COLUMN_PASSWORD, password);
-        values.put(DatabaseHelper.COLUMN_THEME_PREFERENCE, themePreference);
+        if (password != null && !password.isEmpty()) {
+            values.put(DatabaseHelper.COLUMN_PASSWORD, password);
+        }
+        if (themePreference != null) {
+            values.put(DatabaseHelper.COLUMN_THEME_PREFERENCE, themePreference);
+        }
         values.put(DatabaseHelper.COLUMN_CLOUD_SYNC_STATUS, cloudSyncStatus);
 
         return database.update(DatabaseHelper.TABLE_USER_SETTINGS, values, DatabaseHelper.COLUMN_USER_ID + " = ?", new String[]{userId});
     }
+
+
 
 
     // 以下三个方法为UserSettings（查）

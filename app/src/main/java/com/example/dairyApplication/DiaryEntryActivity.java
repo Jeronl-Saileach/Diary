@@ -34,6 +34,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
     private String[] colors = {"红色", "绿色", "蓝色"};
     private String userID;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Objects.requireNonNull(getSupportActionBar()).setTitle("SMDiary");
