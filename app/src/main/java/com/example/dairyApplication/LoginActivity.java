@@ -78,8 +78,8 @@ public class LoginActivity extends AppCompatActivity {
     private boolean validateLogin(String username, String password) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         boolean isValid = false;
-
         Cursor cursor = null;
+
         try {
             String[] columns = {"Password"};
             String selection = "UserID = ?";
@@ -87,19 +87,23 @@ public class LoginActivity extends AppCompatActivity {
 
             cursor = db.query("UserSettings", columns, selection, selectionArgs, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
-                String storedPassword = cursor.getString(cursor.getColumnIndex("Password"));
+                int columnIndex = cursor.getColumnIndexOrThrow("Password"); // 获取 Password 列的索引
+                String storedPassword = cursor.getString(columnIndex);
                 isValid = storedPassword.equals(password);
+            } else {
+                Log.e("DBTest", "User not found or cursor is null");
             }
         } catch (Exception e) {
             Log.e("DBTest", "验证用户登录时出错", e);
         } finally {
             if (cursor != null) {
-                cursor.close();
+                cursor.close(); // 关闭 cursor
             }
-            db.close();
+            db.close(); // 关闭数据库
         }
         return isValid;
     }
+
 
     @Override
     protected void onDestroy() {
