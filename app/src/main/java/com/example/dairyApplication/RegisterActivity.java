@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.smdiary.R;
 
+import java.util.Objects;
+
 import Database.DatabaseHelper;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -22,6 +24,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Objects.requireNonNull(getSupportActionBar()).setTitle("SMDiary");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
