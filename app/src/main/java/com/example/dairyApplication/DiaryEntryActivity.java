@@ -9,6 +9,7 @@ import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -115,6 +116,18 @@ public class DiaryEntryActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("USER_ID", userID);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        userID = savedInstanceState.getString("USER_ID");
+    }
+
     // 加载指定 ID 的日记内容
     private void loadDiaryEntry(long entryId) {
         Cursor cursor = databaseManager.queryDiaryEntries("EntryId = ?", new String[]{String.valueOf(entryId)});
@@ -129,6 +142,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
     private void saveDiaryEntry() {
         String title = diaryTitle.getText().toString().trim();
         String content = diaryContent.getText().toString().trim();
+        Log.d(userID, "userIBefore " + userID);
 
         // 非空验证
         if (title.isEmpty() || content.isEmpty()) {
@@ -139,6 +153,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
         long date = System.currentTimeMillis();
 
         if (entryId == -1) {
+            Log.d(userID, "userIdForInsert " + userID);
             // 新建日记
             long newEntryId = databaseManager.insertDiaryEntry(title, content, date, "无标签", "默认位置", 1,userID);
             if (newEntryId != -1) {
@@ -150,6 +165,8 @@ public class DiaryEntryActivity extends AppCompatActivity {
             }
         } else {
             // 更新现有日记
+            Log.d(userID, "userIdForUpdate " + userID);
+            userID = getIntent().getStringExtra("USER_ID");
             int rowsUpdated = databaseManager.updateDiaryEntry(entryId, title, content, date, "无标签", "默认位置", 1,userID);
             if (rowsUpdated > 0) {
                 Toast.makeText(this, "日记更新成功", Toast.LENGTH_SHORT).show();
@@ -233,6 +250,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("Debug", "userID in onResume: " + userID);
         if (databaseManager != null) {
             databaseManager.open();  // 重新打开数据库连接
         }

@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new DiaryAdapter(this, cursor, entryId -> {
             Intent editDiaryIntent = new Intent(MainActivity.this, DiaryEntryActivity.class);
             editDiaryIntent.putExtra("entryId", entryId);
+            editDiaryIntent.putExtra("USER_ID", userID);
             startActivityForResult(editDiaryIntent, REQUEST_CODE_EDIT_DIARY);
         });
 

@@ -55,17 +55,35 @@ public class DatabaseManager {
 
     // DiaryEntry（改）
     public int updateDiaryEntry(long entryId, String title, String content, long date, String tags, String location, int categoryId, String userId) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.COLUMN_TITLE, title);
-        values.put(DatabaseHelper.COLUMN_CONTENT, content);
-        values.put(DatabaseHelper.COLUMN_DATE, date);
-        values.put(DatabaseHelper.COLUMN_TAGS, tags);
-        values.put(DatabaseHelper.COLUMN_LOCATION, location);
-        values.put(DatabaseHelper.COLUMN_CATEGORY_ID, categoryId);
-        values.put(DatabaseHelper.COLUMN_USER_ID_FK, userId);
+        if (userId == null) {
+            Log.e("UpdateDiaryEntry", "userId is null, cannot update entry");
+            return 0;
+        }
 
-        return database.update(DatabaseHelper.TABLE_DIARY_ENTRY, values, DatabaseHelper.COLUMN_ENTRY_ID + " = ?", new String[]{String.valueOf(entryId)});
+        Log.d("UpdateDiaryEntry", "Updating entry with userId: " + userId);
+
+        int rowsAffected = 0;
+        database.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseHelper.COLUMN_TITLE, title);
+            values.put(DatabaseHelper.COLUMN_CONTENT, content);
+            values.put(DatabaseHelper.COLUMN_DATE, date);
+            values.put(DatabaseHelper.COLUMN_TAGS, tags);
+            values.put(DatabaseHelper.COLUMN_LOCATION, location);
+            values.put(DatabaseHelper.COLUMN_CATEGORY_ID, categoryId);
+            values.put(DatabaseHelper.COLUMN_USER_ID_FK, userId); // 确保 userId 被包含在更新中
+
+            rowsAffected = database.update(DatabaseHelper.TABLE_DIARY_ENTRY, values, DatabaseHelper.COLUMN_ENTRY_ID + " = ?", new String[]{String.valueOf(entryId)});
+            database.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e("DatabaseManager", "Error updating diary entry", e);
+        } finally {
+            database.endTransaction();
+        }
+        return rowsAffected;
     }
+
 
     // DiaryEntry（查）
     public Cursor getAllDiaryEntries() {
@@ -95,10 +113,6 @@ public class DatabaseManager {
 
         return database.update(DatabaseHelper.TABLE_USER_SETTINGS, values, DatabaseHelper.COLUMN_USER_ID + " = ?", new String[]{userId});
     }
-
-
-
-
     // 以下三个方法为UserSettings（查）
     public Cursor getAllUserSettings() {
         return database.query(DatabaseHelper.TABLE_USER_SETTINGS, null, null, null, null, null, null);
