@@ -31,7 +31,7 @@ public class DatabaseManager {
     }
 
     // DiaryEntry（增）
-    public long insertDiaryEntry(String title, String content, long date, String tags, String location, int categoryId, String userId) {
+    public long insertDiaryEntry(String title, String content, long date, String tags, String location, int categoryId, String userId, String imagePath) {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_TITLE, title);
         values.put(DatabaseHelper.COLUMN_CONTENT, content);
@@ -40,6 +40,7 @@ public class DatabaseManager {
         values.put(DatabaseHelper.COLUMN_LOCATION, location);
         values.put(DatabaseHelper.COLUMN_CATEGORY_ID, categoryId);
         values.put(DatabaseHelper.COLUMN_USER_ID_FK, userId);
+        values.put(DatabaseHelper.COLUMN_IMAGE_PATH, imagePath);
 
         return database.insert(DatabaseHelper.TABLE_DIARY_ENTRY, null, values);
     }
@@ -54,7 +55,7 @@ public class DatabaseManager {
     }
 
     // DiaryEntry（改）
-    public int updateDiaryEntry(long entryId, String title, String content, long date, String tags, String location, int categoryId, String userId) {
+    public int updateDiaryEntry(long entryId, String title, String content, long date, String tags, String location, int categoryId, String userId, String imagePath) {
         if (userId == null) {
             Log.e("UpdateDiaryEntry", "userId is null, cannot update entry");
             return 0;
@@ -73,6 +74,7 @@ public class DatabaseManager {
             values.put(DatabaseHelper.COLUMN_LOCATION, location);
             values.put(DatabaseHelper.COLUMN_CATEGORY_ID, categoryId);
             values.put(DatabaseHelper.COLUMN_USER_ID_FK, userId); // 确保 userId 被包含在更新中
+            values.put(DatabaseHelper.COLUMN_IMAGE_PATH, imagePath);
 
             rowsAffected = database.update(DatabaseHelper.TABLE_DIARY_ENTRY, values, DatabaseHelper.COLUMN_ENTRY_ID + " = ?", new String[]{String.valueOf(entryId)});
             database.setTransactionSuccessful();

@@ -1,10 +1,18 @@
 package com.example.dairyApplication;
 
+import android.annotation.SuppressLint;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -14,13 +22,18 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.smdiary.R;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Objects;
 
 import Database.DatabaseHelper;
@@ -34,6 +47,10 @@ public class DiaryEntryActivity extends AppCompatActivity {
     private long entryId = -1;
     private String[] colors = {"红色", "绿色", "蓝色"};
     private String userID;
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private ImageView imageView;
+    private Button pickImageButton;
+    private String imagePath;
 
 
     @Override
@@ -53,6 +70,13 @@ public class DiaryEntryActivity extends AppCompatActivity {
         Button customizeButton = findViewById(R.id.customizeButton);
         Button saveEntryButton = findViewById(R.id.saveEntryButton);
         Button deleteEntryButton = findViewById(R.id.deleteEntryButton);
+        imageView = findViewById(R.id.imageView);
+        pickImageButton = findViewById(R.id.pickImageButton);
+        pickImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                openImageChooser();
+            }
+        });
 
         // 初始化数据库管理器
         databaseManager = new DatabaseManager(this);
@@ -115,28 +139,70 @@ public class DiaryEntryActivity extends AppCompatActivity {
             }
         });
     }
-
+    private void openImageChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "选择图片"), PICK_IMAGE_REQUEST);
+    }
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("USER_ID", userID);
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri imageUri = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                imageView.setImageBitmap(bitmap);
+                imagePath = saveImageToInternalStorage(bitmap);
+            } catch (IOException e) {
+                Log.e("DiaryEntryActivity", "Error loading image", e);
+                Toast.makeText(this, "无法加载图片", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        userID = savedInstanceState.getString("USER_ID");
+    private String saveImageToInternalStorage(Bitmap bitmap) {
+        Context context = getApplicationContext();
+        File directory = context.getDir("imageDir", Context.MODE_PRIVATE);
+        File imageFile = new File(directory, "diaryImage.png");
+        try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (IOException e) {
+            Log.e("DiaryEntryActivity", "Error saving image", e);
+        }
+
+        return imageFile.getAbsolutePath();
     }
+
+
 
     // 加载指定 ID 的日记内容
     private void loadDiaryEntry(long entryId) {
-        Cursor cursor = databaseManager.queryDiaryEntries("EntryId = ?", new String[]{String.valueOf(entryId)});
+        Cursor cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
         if (cursor != null && cursor.moveToFirst()) {
-            diaryTitle.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TITLE)));
-            diaryContent.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CONTENT)));
-            cursor.close();
+            try {
+                diaryTitle.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TITLE)));
+                diaryContent.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CONTENT)));
+
+                // 确保 COLUMN_IMAGE_PATH 列存在
+                int imagePathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_PATH);
+                if (imagePathIndex != -1) {
+                    @SuppressLint("Range") String imagePath = cursor.getString(imagePathIndex);
+                    if (imagePath != null) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+                        imageView.setImageBitmap(bitmap);
+                    }
+                } else {
+                    Log.e("loadDiaryEntry", "COLUMN_IMAGE_PATH column not found");
+                }
+            } catch (IllegalArgumentException e) {
+                Log.e("loadDiaryEntry", "Column not found", e);
+            } finally {
+                cursor.close();
+            }
         }
     }
+
 
     // 保存日记条目到数据库
     private void saveDiaryEntry() {
@@ -152,27 +218,63 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
         long date = System.currentTimeMillis();
 
+        if (imagePath == null) {
+            Toast.makeText(this, "请选择一张图片", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (entryId == -1) {
-            Log.d(userID, "userIdForInsert " + userID);
             // 新建日记
-            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, "无标签", "默认位置", 1,userID);
+            Log.d("DiaryEntry", "userIdForInsert " + userID);
+
+            // 插入新的日记条目
+            long newEntryId = databaseManager.insertDiaryEntry(
+                    title,
+                    content,
+                    date,
+                    "无标签",
+                    "默认位置",
+                    1,
+                    userID,
+                    imagePath
+            );
+
             if (newEntryId != -1) {
+                // 插入成功
                 Toast.makeText(this, "日记保存成功", Toast.LENGTH_SHORT).show();
                 setResult(RESULT_OK); // 设置返回结果
                 finish();
             } else {
+                // 插入失败
                 Toast.makeText(this, "保存失败", Toast.LENGTH_SHORT).show();
             }
         } else {
             // 更新现有日记
-            Log.d(userID, "userIdForUpdate " + userID);
+            Log.d("DiaryEntry", "userIdForUpdate " + userID);
+
+            // 从Intent获取userID
             userID = getIntent().getStringExtra("USER_ID");
-            int rowsUpdated = databaseManager.updateDiaryEntry(entryId, title, content, date, "无标签", "默认位置", 1,userID);
+
+            // 更新日记条目
+            int rowsUpdated = databaseManager.updateDiaryEntry(
+                    entryId,
+                    title,
+                    content,
+                    date,
+                    "无标签",
+                    "默认位置",
+                    1,
+                    userID,
+                    imagePath
+            );
+
             if (rowsUpdated > 0) {
+                // 更新成功
                 Toast.makeText(this, "日记更新成功", Toast.LENGTH_SHORT).show();
                 setResult(RESULT_OK); // 设置返回结果
                 finish();
             } else {
+                // 更新失败
                 Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();
             }
         }
@@ -247,12 +349,4 @@ public class DiaryEntryActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("Debug", "userID in onResume: " + userID);
-        if (databaseManager != null) {
-            databaseManager.open();  // 重新打开数据库连接
-        }
-    }
 }
