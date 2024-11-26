@@ -187,7 +187,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
                 // 确保 COLUMN_IMAGE_PATH 列存在
                 int imagePathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_PATH);
                 if (imagePathIndex != -1) {
-                    @SuppressLint("Range") String imagePath = cursor.getString(imagePathIndex);
+                    String imagePath = cursor.getString(imagePathIndex);
                     if (imagePath != null) {
                         Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
                         imageView.setImageBitmap(bitmap);
@@ -203,7 +203,6 @@ public class DiaryEntryActivity extends AppCompatActivity {
         }
     }
 
-
     // 保存日记条目到数据库
     private void saveDiaryEntry() {
         String title = diaryTitle.getText().toString().trim();
@@ -218,14 +217,9 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
         long date = System.currentTimeMillis();
 
-        if (imagePath == null) {
-            Toast.makeText(this, "请选择一张图片", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         if (entryId == -1) {
             // 新建日记
-            Log.d("DiaryEntry", "userIdForInsert " + userID);
+            Log.d("DiaryEntry", "ImagePathInsert " + imagePath);
 
             // 插入新的日记条目
             long newEntryId = databaseManager.insertDiaryEntry(
@@ -250,8 +244,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
             }
         } else {
             // 更新现有日记
-            Log.d("DiaryEntry", "userIdForUpdate " + userID);
-
+            Log.d("DiaryEntry", "ImagePathUpdate " + imagePath);
             // 从Intent获取userID
             userID = getIntent().getStringExtra("USER_ID");
 
