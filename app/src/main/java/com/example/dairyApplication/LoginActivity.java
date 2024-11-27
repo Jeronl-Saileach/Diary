@@ -28,9 +28,6 @@ public class LoginActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
 
-        // 插入测试用户（仅在开发阶段使用）
-        insertTestUser("testuser", "12345");
-
         EditText usernameEditText = findViewById(R.id.username);
         EditText passwordEditText = findViewById(R.id.password);
         Button loginButton = findViewById(R.id.loginButton);

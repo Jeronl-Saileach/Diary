@@ -1,8 +1,8 @@
 package com.example.dairyApplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -12,8 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.smdiary.R;
 
 import Database.DatabaseManager;
-
-import android.widget.EditText; // 添加这一行
 
 public class ChangePasswordActivity extends AppCompatActivity {
 
@@ -50,6 +48,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
         String newPassword = newPasswordInput.getText().toString().trim();
         String confirmPassword = confirmPasswordInput.getText().toString().trim();
 
+        Log.e("userId", "UserId is" + userId);
+
         if (newPassword.isEmpty()) {
             Toast.makeText(this, "密码不能为空", Toast.LENGTH_SHORT).show();
             return;
@@ -60,21 +60,19 @@ public class ChangePasswordActivity extends AppCompatActivity {
             return;
         }
 
-        if (userId == null) {
-            Log.e("ChangePasswordActivity", "Cannot change password: userId is null");
-            Toast.makeText(this, "无法修改密码，用户 ID 不存在", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        dbManager.open();
-        int updatedRows = dbManager.updateUserSettings(userId, newPassword, null, 0);
-        dbManager.close();
-
-        if (updatedRows > 0) {
-            Toast.makeText(this, "密码修改成功", Toast.LENGTH_SHORT).show();
-            finish();
-        } else {
-            Toast.makeText(this, "密码修改失败", Toast.LENGTH_SHORT).show();
+        try {
+            dbManager.open();
+            int updatedRows = dbManager.updateUserSettings(userId, newPassword, null, 0);
+            dbManager.close();
+            if (updatedRows > 0) {
+                Toast.makeText(this, "密码修改成功", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(this, "密码修改失败", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e){
+            Log.e("ChangePasswordActivity", "Error opening database", e);
+            Toast.makeText(this, "数据库打开失败", Toast.LENGTH_SHORT).show();
         }
     }
 }
