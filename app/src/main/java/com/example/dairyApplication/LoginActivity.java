@@ -57,21 +57,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void insertTestUser(String username, String password) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("UserID", username);
-        values.put("Password", password);
-
-        long result = db.insert("UserSettings", null, values);
-        if (result == -1) {
-            Log.d("DBTest", "测试用户插入失败");
-        } else {
-            Log.d("DBTest", "测试用户已插入: " + username);
-        }
-        db.close();
-    }
-
     private boolean validateLogin(String username, String password) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         boolean isValid = false;
@@ -100,7 +85,6 @@ public class LoginActivity extends AppCompatActivity {
         }
         return isValid;
     }
-
 
     @Override
     protected void onDestroy() {

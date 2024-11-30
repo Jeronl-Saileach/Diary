@@ -174,8 +174,6 @@ public class DiaryEntryActivity extends AppCompatActivity {
         return imageFile.getAbsolutePath();
     }
 
-
-
     // 加载指定 ID 的日记内容
     private void loadDiaryEntry(long entryId) {
         Cursor cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});

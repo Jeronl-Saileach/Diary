@@ -32,6 +32,7 @@ public class DatabaseManager {
 
     // DiaryEntry（增）
     public long insertDiaryEntry(String title, String content, long date, String tags, String location, int categoryId, String userId, String imagePath) {
+        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_TITLE, title);
         values.put(DatabaseHelper.COLUMN_CONTENT, content);
@@ -56,34 +57,19 @@ public class DatabaseManager {
 
     // DiaryEntry（改）
     public int updateDiaryEntry(long entryId, String title, String content, long date, String tags, String location, int categoryId, String userId, String imagePath) {
-        if (userId == null) {
-            Log.e("UpdateDiaryEntry", "userId is null, cannot update entry");
-            return 0;
-        }
-
+        open();
         Log.d("UpdateDiaryEntry", "Updating entry with userId: " + userId);
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_TITLE, title);
+        values.put(DatabaseHelper.COLUMN_CONTENT, content);
+        values.put(DatabaseHelper.COLUMN_DATE, date);
+        values.put(DatabaseHelper.COLUMN_TAGS, tags);
+        values.put(DatabaseHelper.COLUMN_LOCATION, location);
+        values.put(DatabaseHelper.COLUMN_CATEGORY_ID, categoryId);
+        values.put(DatabaseHelper.COLUMN_USER_ID_FK, userId);
+        values.put(DatabaseHelper.COLUMN_IMAGE_PATH, imagePath);
 
-        int rowsAffected = 0;
-        database.beginTransaction();
-        try {
-            ContentValues values = new ContentValues();
-            values.put(DatabaseHelper.COLUMN_TITLE, title);
-            values.put(DatabaseHelper.COLUMN_CONTENT, content);
-            values.put(DatabaseHelper.COLUMN_DATE, date);
-            values.put(DatabaseHelper.COLUMN_TAGS, tags);
-            values.put(DatabaseHelper.COLUMN_LOCATION, location);
-            values.put(DatabaseHelper.COLUMN_CATEGORY_ID, categoryId);
-            values.put(DatabaseHelper.COLUMN_USER_ID_FK, userId); // 确保 userId 被包含在更新中
-            values.put(DatabaseHelper.COLUMN_IMAGE_PATH, imagePath);
-
-            rowsAffected = database.update(DatabaseHelper.TABLE_DIARY_ENTRY, values, DatabaseHelper.COLUMN_ENTRY_ID + " = ?", new String[]{String.valueOf(entryId)});
-            database.setTransactionSuccessful();
-        } catch (Exception e) {
-            Log.e("DatabaseManager", "Error updating diary entry", e);
-        } finally {
-            database.endTransaction();
-        }
-        return rowsAffected;
+        return database.update(DatabaseHelper.TABLE_DIARY_ENTRY, values, DatabaseHelper.COLUMN_ENTRY_ID + " = ?", new String[]{String.valueOf(entryId)});
     }
 
 
