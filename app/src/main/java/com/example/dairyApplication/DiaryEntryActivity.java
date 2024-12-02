@@ -258,6 +258,16 @@ public class DiaryEntryActivity extends AppCompatActivity {
             // 从Intent获取userID
             userID = getIntent().getStringExtra("USER_ID");
 
+            if (imagePath == null || imagePath.isEmpty()) {
+                Cursor cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
+                if (cursor != null && cursor.moveToFirst()) {
+                    int imagePathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_PATH);
+                    if (imagePathIndex != -1) {
+                        imagePath = cursor.getString(imagePathIndex);
+                    } cursor.close();
+                }
+            }
+
             // 更新日记条目
             int rowsUpdated = databaseManager.updateDiaryEntry(
                     entryId,
