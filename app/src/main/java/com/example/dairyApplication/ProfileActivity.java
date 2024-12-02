@@ -29,8 +29,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         Button returnToMain = findViewById(R.id.returnToMain); // 获取返回按钮
 
-
-
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,7 +42,7 @@ public class ProfileActivity extends AppCompatActivity {
         // 处理返回按钮点击事件
         returnToMain.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+                public void onClick(View v) {
                 Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
                 startActivity(intent); // 跳转回主活动
             }

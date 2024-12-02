@@ -1,3 +1,13 @@
 <resources>
     <string name="Diary_Application">SMDiary</string>
+
+    <string-array name="tags_array">
+        <item>开心</item>
+        <item>伤心</item>
+        <item>无聊</item>
+        <item>烦躁</item>
+        <item>劳累</item>
+        <item>有意义的一天</item>
+    </string-array>
+
 </resources>
