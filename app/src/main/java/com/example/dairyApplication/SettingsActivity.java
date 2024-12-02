@@ -57,6 +57,20 @@ public class SettingsActivity extends AppCompatActivity {
         themeButton.setOnClickListener(v -> selectImage());
 
         setupPasswordButton(); // 设置密码保护按钮点击事件
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("USER_ID", userId);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        userId = savedInstanceState.getString("USER_ID");
+        Log.d("ChangePasswordActivity", "Restored userId: " + userId);
     }
 
     private void setupPasswordButton() {

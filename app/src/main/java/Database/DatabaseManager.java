@@ -31,7 +31,8 @@ public class DatabaseManager {
     }
 
     // DiaryEntry（增）
-    public long insertDiaryEntry(String title, String content, long date, String tags, String location, int categoryId, String userId) {
+    public long insertDiaryEntry(String title, String content, long date, String tags, String location, int categoryId, String userId, String imagePath) {
+        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_TITLE, title);
         values.put(DatabaseHelper.COLUMN_CONTENT, content);
@@ -40,6 +41,7 @@ public class DatabaseManager {
         values.put(DatabaseHelper.COLUMN_LOCATION, location);
         values.put(DatabaseHelper.COLUMN_CATEGORY_ID, categoryId);
         values.put(DatabaseHelper.COLUMN_USER_ID_FK, userId);
+        values.put(DatabaseHelper.COLUMN_IMAGE_PATH, imagePath);
 
         return database.insert(DatabaseHelper.TABLE_DIARY_ENTRY, null, values);
     }
@@ -54,7 +56,9 @@ public class DatabaseManager {
     }
 
     // DiaryEntry（改）
-    public int updateDiaryEntry(long entryId, String title, String content, long date, String tags, String location, int categoryId, String userId) {
+    public int updateDiaryEntry(long entryId, String title, String content, long date, String tags, String location, int categoryId, String userId, String imagePath) {
+        open();
+        Log.d("UpdateDiaryEntry", "Updating entry with userId: " + userId);
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_TITLE, title);
         values.put(DatabaseHelper.COLUMN_CONTENT, content);
@@ -63,9 +67,11 @@ public class DatabaseManager {
         values.put(DatabaseHelper.COLUMN_LOCATION, location);
         values.put(DatabaseHelper.COLUMN_CATEGORY_ID, categoryId);
         values.put(DatabaseHelper.COLUMN_USER_ID_FK, userId);
+        values.put(DatabaseHelper.COLUMN_IMAGE_PATH, imagePath);
 
         return database.update(DatabaseHelper.TABLE_DIARY_ENTRY, values, DatabaseHelper.COLUMN_ENTRY_ID + " = ?", new String[]{String.valueOf(entryId)});
     }
+
 
     // DiaryEntry（查）
     public Cursor getAllDiaryEntries() {
@@ -95,10 +101,6 @@ public class DatabaseManager {
 
         return database.update(DatabaseHelper.TABLE_USER_SETTINGS, values, DatabaseHelper.COLUMN_USER_ID + " = ?", new String[]{userId});
     }
-
-
-
-
     // 以下三个方法为UserSettings（查）
     public Cursor getAllUserSettings() {
         return database.query(DatabaseHelper.TABLE_USER_SETTINGS, null, null, null, null, null, null);

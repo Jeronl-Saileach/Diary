@@ -85,7 +85,8 @@ public class testDatabase extends AppCompatActivity {
             int categoryId = 1;
             String UserID = "2";
 
-            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, tags, location, categoryId,UserID);
+            String imagePath = "";
+            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, tags, location, categoryId,UserID, imagePath);
             if (newEntryId != -1) {
                 Toast.makeText(this, "插入成功，ID: " + newEntryId, Toast.LENGTH_SHORT).show();
             } else {
@@ -144,9 +145,10 @@ public class testDatabase extends AppCompatActivity {
             String location = "四教";
             int categoryId = 2;
             String id = "3";
+            String imagePath = "";
 
 
-            int rowsUpdated = databaseManager.updateDiaryEntry(entryId, title, content, date, tags, location, categoryId,id);
+            int rowsUpdated = databaseManager.updateDiaryEntry(entryId, title, content, date, tags, location, categoryId, id, imagePath);
             if (rowsUpdated > 0) {
                 Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
             } else {

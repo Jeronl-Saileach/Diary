@@ -11,7 +11,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // 数据库名字及版本
     private static final String DATABASE_NAME = "diary.db";
-    private static final int DATABASE_VERSION = 8; // 升级版本号以适应数据库结构的变化
+    private static final int DATABASE_VERSION = 10; // 升级版本号以适应数据库结构的变化
 
     // DiaryEntry 表常量
     public static final String TABLE_DIARY_ENTRY = "DiaryEntry";
@@ -22,6 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TAGS = "Tags";
     public static final String COLUMN_LOCATION = "Location";
     public static final String COLUMN_CATEGORY_ID = "CategoryID";
+    public static final String COLUMN_IMAGE_PATH = "ImagePath";
     public static final String COLUMN_USER_ID_FK = "UserID"; // 新增的UserID外键
 
     // Media 表常量
@@ -34,7 +35,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Categories 表常量
     public static final String TABLE_CATEGORIES = "Categories";
     public static final String COLUMN_CATEGORY_NAME = "CategoryName";
-    // 删除了UserID外键常量
 
     // UserSettings 表常量
     public static final String TABLE_USER_SETTINGS = "UserSettings";
@@ -52,6 +52,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_TAGS + " TEXT, "
             + COLUMN_LOCATION + " TEXT, "
             + COLUMN_CATEGORY_ID + " INTEGER, "
+            + COLUMN_IMAGE_PATH + " TEXT, "
             + COLUMN_USER_ID_FK + " TEXT, " // 新增的UserID列
             + "FOREIGN KEY(" + COLUMN_CATEGORY_ID + ") REFERENCES "
             + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY_ID + "), "

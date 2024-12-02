@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new DiaryAdapter(this, cursor, entryId -> {
             Intent editDiaryIntent = new Intent(MainActivity.this, DiaryEntryActivity.class);
             editDiaryIntent.putExtra("entryId", entryId);
+            editDiaryIntent.putExtra("USER_ID", userID);
             startActivityForResult(editDiaryIntent, REQUEST_CODE_EDIT_DIARY);
         });
 
@@ -104,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
     private void searchDiaryEntries(String query) {
         String selection = DatabaseHelper.COLUMN_USER_ID_FK + " = ? AND (" +
                 DatabaseHelper.COLUMN_TITLE + " LIKE ? OR " +
+                "strftime('%Y-%m-%d', datetime(" + DatabaseHelper.COLUMN_DATE + "/1000, 'unixepoch')) LIKE ? OR " +
                 DatabaseHelper.COLUMN_CONTENT + " LIKE ?)";
 
         String[] selectionArgs = new String[]{

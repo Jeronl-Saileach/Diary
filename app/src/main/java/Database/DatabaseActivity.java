@@ -82,7 +82,8 @@ public class DatabaseActivity extends AppCompatActivity {
             String UserID = "1";
 
             // 修改这里，移除 id 参数
-            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, tags, location, categoryId,UserID);
+            String imagePath = "";
+            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, tags, location, categoryId,UserID, imagePath);
             if (newEntryId != -1) {
                 Toast.makeText(this, "插入成功，ID: " + newEntryId, Toast.LENGTH_SHORT).show();
             }
@@ -140,7 +141,8 @@ public class DatabaseActivity extends AppCompatActivity {
             int categoryId = 2;
             String id = "3";
 
-            int rowsUpdated = databaseManager.updateDiaryEntry(entryId, title, content, date, tags, location, categoryId,id);
+            String imagePath = "";
+            int rowsUpdated = databaseManager.updateDiaryEntry(entryId, title, content, date, tags, location, categoryId,id, imagePath);
             if (rowsUpdated > 0) {
                 Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
             } else {

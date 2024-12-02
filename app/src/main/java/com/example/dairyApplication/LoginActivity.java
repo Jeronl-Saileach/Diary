@@ -28,9 +28,6 @@ public class LoginActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
 
-        // 插入测试用户（仅在开发阶段使用）
-        insertTestUser("testuser", "12345");
-
         EditText usernameEditText = findViewById(R.id.username);
         EditText passwordEditText = findViewById(R.id.password);
         Button loginButton = findViewById(R.id.loginButton);
@@ -58,21 +55,6 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(intent);
         });
-    }
-
-    private void insertTestUser(String username, String password) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("UserID", username);
-        values.put("Password", password);
-
-        long result = db.insert("UserSettings", null, values);
-        if (result == -1) {
-            Log.d("DBTest", "测试用户插入失败");
-        } else {
-            Log.d("DBTest", "测试用户已插入: " + username);
-        }
-        db.close();
     }
 
     private boolean validateLogin(String username, String password) {
@@ -103,7 +85,6 @@ public class LoginActivity extends AppCompatActivity {
         }
         return isValid;
     }
-
 
     @Override
     protected void onDestroy() {
