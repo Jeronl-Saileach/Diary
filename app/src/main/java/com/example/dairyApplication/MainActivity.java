@@ -106,10 +106,13 @@ public class MainActivity extends AppCompatActivity {
         String selection = DatabaseHelper.COLUMN_USER_ID_FK + " = ? AND (" +
                 DatabaseHelper.COLUMN_TITLE + " LIKE ? OR " +
                 "strftime('%Y-%m-%d', datetime(" + DatabaseHelper.COLUMN_DATE + "/1000, 'unixepoch')) LIKE ? OR " +
-                DatabaseHelper.COLUMN_CONTENT + " LIKE ?)";
+                DatabaseHelper.COLUMN_CONTENT + " LIKE ? OR " +
+                DatabaseHelper.COLUMN_TAGS + " LIKE ?)";
 
         String[] selectionArgs = new String[]{
                 userID,
+                "%" + query + "%",
+                "%" + query + "%",
                 "%" + query + "%",
                 "%" + query + "%"
         };

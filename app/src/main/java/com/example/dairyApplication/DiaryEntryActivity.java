@@ -20,9 +20,11 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -43,6 +45,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
     private EditText diaryContent;
     private EditText diaryTitle;
+    private Spinner tagSpinner;
     private DatabaseManager databaseManager;
     private long entryId = -1;
     private String[] colors = {"红色", "绿色", "蓝色"};
@@ -66,12 +69,19 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
         diaryContent = findViewById(R.id.diaryContent);
         diaryTitle = findViewById(R.id.diaryTitle);
+        tagSpinner = findViewById(R.id.tagSpinner);
         Button returnToMain = findViewById(R.id.returnToMain);
         Button customizeButton = findViewById(R.id.customizeButton);
         Button saveEntryButton = findViewById(R.id.saveEntryButton);
         Button deleteEntryButton = findViewById(R.id.deleteEntryButton);
         imageView = findViewById(R.id.imageView);
         pickImageButton = findViewById(R.id.pickImageButton);
+
+        ArrayAdapter<CharSequence> tagAdapter = ArrayAdapter.createFromResource(this,
+                R.array.tags_array, android.R.layout.simple_spinner_item);
+        tagAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        tagSpinner.setAdapter(tagAdapter);
+
         pickImageButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 openImageChooser();
@@ -181,6 +191,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
             try {
                 diaryTitle.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TITLE)));
                 diaryContent.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CONTENT)));
+                tagSpinner.setSelection(((ArrayAdapter) tagSpinner.getAdapter()).getPosition(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TAGS))));
 
                 // 确保 COLUMN_IMAGE_PATH 列存在
                 int imagePathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_PATH);
@@ -205,6 +216,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
     private void saveDiaryEntry() {
         String title = diaryTitle.getText().toString().trim();
         String content = diaryContent.getText().toString().trim();
+        String tag = tagSpinner.getSelectedItem().toString();
         Log.d(userID, "userIBefore " + userID);
 
         // 非空验证
@@ -224,7 +236,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
                     title,
                     content,
                     date,
-                    "无标签",
+                    tag,
                     "默认位置",
                     1,
                     userID,
@@ -246,13 +258,23 @@ public class DiaryEntryActivity extends AppCompatActivity {
             // 从Intent获取userID
             userID = getIntent().getStringExtra("USER_ID");
 
+            if (imagePath == null || imagePath.isEmpty()) {
+                Cursor cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
+                if (cursor != null && cursor.moveToFirst()) {
+                    int imagePathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_PATH);
+                    if (imagePathIndex != -1) {
+                        imagePath = cursor.getString(imagePathIndex);
+                    } cursor.close();
+                }
+            }
+
             // 更新日记条目
             int rowsUpdated = databaseManager.updateDiaryEntry(
                     entryId,
                     title,
                     content,
                     date,
-                    "无标签",
+                    tag,
                     "默认位置",
                     1,
                     userID,
