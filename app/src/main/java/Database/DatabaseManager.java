@@ -30,8 +30,7 @@ public class DatabaseManager {
         dbHelper.close();
     }
 
-    // DiaryEntry（增）
-    public long insertDiaryEntry(String title, String content, long date, String tags, String location, int categoryId, String userId, String imagePath) {
+    public long insertDiaryEntry(String title, String content, long date, String tags, String location, int categoryId, String userId, String imagePath, String videoPath) {
         open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_TITLE, title);
@@ -42,9 +41,11 @@ public class DatabaseManager {
         values.put(DatabaseHelper.COLUMN_CATEGORY_ID, categoryId);
         values.put(DatabaseHelper.COLUMN_USER_ID_FK, userId);
         values.put(DatabaseHelper.COLUMN_IMAGE_PATH, imagePath);
+        values.put(DatabaseHelper.COLUMN_VIDEO_PATH, videoPath); // 添加视频路径
 
         return database.insert(DatabaseHelper.TABLE_DIARY_ENTRY, null, values);
     }
+
 
     // DiaryEntry（删除）
     public int deleteDiaryEntryById(long entryId) {
@@ -55,10 +56,8 @@ public class DatabaseManager {
         return database.delete(DatabaseHelper.TABLE_DIARY_ENTRY, selection, selectionArgs);
     }
 
-    // DiaryEntry（改）
-    public int updateDiaryEntry(long entryId, String title, String content, long date, String tags, String location, int categoryId, String userId, String imagePath) {
-        open();
-        Log.d("UpdateDiaryEntry", "Updating entry with userId: " + userId);
+    public int updateDiaryEntry(long entryId, String title, String content, long date, String tags, String location, int categoryId, String userId, String imagePath, String videoPath) {
+        open(); // 确保数据库连接是打开的
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_TITLE, title);
         values.put(DatabaseHelper.COLUMN_CONTENT, content);
@@ -68,9 +67,11 @@ public class DatabaseManager {
         values.put(DatabaseHelper.COLUMN_CATEGORY_ID, categoryId);
         values.put(DatabaseHelper.COLUMN_USER_ID_FK, userId);
         values.put(DatabaseHelper.COLUMN_IMAGE_PATH, imagePath);
+        values.put(DatabaseHelper.COLUMN_VIDEO_PATH, videoPath); // 添加视频路径
 
         return database.update(DatabaseHelper.TABLE_DIARY_ENTRY, values, DatabaseHelper.COLUMN_ENTRY_ID + " = ?", new String[]{String.valueOf(entryId)});
     }
+
 
 
     // DiaryEntry（查）

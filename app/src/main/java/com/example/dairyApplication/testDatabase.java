@@ -76,17 +76,20 @@ public class testDatabase extends AppCompatActivity {
     private void testInsertDiaryEntry() {
         try {
             databaseManager.open();
-            // 移除手动指定的 `id`
+
             String title = "DairyEntry的插入测试";
             String content = "主要的内容是要测试dairyentry中的增方法是否能够正常实现";
             long date = System.currentTimeMillis(); // 使用当前时间戳
             String tags = "测试";
             String location = "四教";
             int categoryId = 1;
-            String UserID = "2";
+            String userId = "2"; // 根据上下文来定义用户ID
 
-            String imagePath = "";
-            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, tags, location, categoryId,UserID, imagePath);
+            String imagePath = ""; // 设置为图片路径，例如："/path/to/image"
+            String videoPath = ""; // 设置为视频路径，例如："/path/to/video"
+
+            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, tags, location, categoryId, userId, imagePath, videoPath);
+
             if (newEntryId != -1) {
                 Toast.makeText(this, "插入成功，ID: " + newEntryId, Toast.LENGTH_SHORT).show();
             } else {
@@ -144,11 +147,24 @@ public class testDatabase extends AppCompatActivity {
             String tags = "测试";
             String location = "四教";
             int categoryId = 2;
-            String id = "3";
-            String imagePath = "";
+            String userId = "3"; // 使用适当的用户ID
 
+            String imagePath = ""; // 更新时的图片路径，例如："/path/to/image"
+            String videoPath = ""; // 更新时的 视频路径，例如："/path/to/video"
 
-            int rowsUpdated = databaseManager.updateDiaryEntry(entryId, title, content, date, tags, location, categoryId, id, imagePath);
+            int rowsUpdated = databaseManager.updateDiaryEntry(
+                    entryId,
+                    title,
+                    content,
+                    date,
+                    tags,
+                    location,
+                    categoryId,
+                    userId,
+                    imagePath,  // 更新图片路径
+                    videoPath   // 更新视频路径
+            );
+
             if (rowsUpdated > 0) {
                 Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
             } else {
@@ -160,6 +176,7 @@ public class testDatabase extends AppCompatActivity {
             databaseManager.close();
         }
     }
+
 
     private void testQueryAllDiaryEntries() {
         try {

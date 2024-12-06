@@ -11,7 +11,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // 数据库名字及版本
     private static final String DATABASE_NAME = "diary.db";
-    private static final int DATABASE_VERSION = 10; // 升级版本号以适应数据库结构的变化
+    private static final int DATABASE_VERSION = 11; // 升级版本号以适应数据库结构的变化
 
     // DiaryEntry 表常量
     public static final String TABLE_DIARY_ENTRY = "DiaryEntry";
@@ -42,8 +42,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_PASSWORD = "Password";
     public static final String COLUMN_THEME_PREFERENCE = "ThemePreference";
     public static final String COLUMN_CLOUD_SYNC_STATUS = "CloudSyncStatus";
+    public static final String COLUMN_VIDEO_PATH = "VideoPath"; // 新增视频路径
 
-    // SQL 创建表语句
+
     private static final String CREATE_DIARY_ENTRY = "CREATE TABLE " + TABLE_DIARY_ENTRY + " ("
             + COLUMN_ENTRY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + COLUMN_TITLE + " TEXT, "
@@ -53,11 +54,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_LOCATION + " TEXT, "
             + COLUMN_CATEGORY_ID + " INTEGER, "
             + COLUMN_IMAGE_PATH + " TEXT, "
-            + COLUMN_USER_ID_FK + " TEXT, " // 新增的UserID列
+            + COLUMN_VIDEO_PATH + " TEXT, " // 添加视频路径
+            + COLUMN_USER_ID_FK + " TEXT, "
             + "FOREIGN KEY(" + COLUMN_CATEGORY_ID + ") REFERENCES "
             + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY_ID + "), "
             + "FOREIGN KEY(" + COLUMN_USER_ID_FK + ") REFERENCES "
             + TABLE_USER_SETTINGS + "(" + COLUMN_USER_ID + "))";
+
 
     private static final String CREATE_MEDIA = "CREATE TABLE " + TABLE_MEDIA + " ("
             + COLUMN_MEDIA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
