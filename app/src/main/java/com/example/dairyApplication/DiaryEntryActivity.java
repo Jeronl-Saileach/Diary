@@ -39,6 +39,7 @@ import com.example.smdiary.R;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
 import Database.DatabaseHelper;
@@ -189,17 +190,39 @@ public class DiaryEntryActivity extends AppCompatActivity {
                 Toast.makeText(this, "无法加载图片", Toast.LENGTH_SHORT).show();
             }
         } else if (requestCode == PICK_VIDEO_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            // 视频选择功能
-            Uri videoUri = data.getData();
-            videoPath = getRealPathFromURI(videoUri); // 获取视频文件路径
-
-            // 设置视频路径到 VideoView
-            videoView.setVideoURI(videoUri);
-            videoView.setVisibility(View.VISIBLE); // 显示 VideoView
-            videoView.start(); // 自动播放
-            Toast.makeText(this, "视频已选择: " + videoPath, Toast.LENGTH_SHORT).show();
+            Uri videoUri = data.getData(); // 获取选中的视频URI
+            videoPath = saveVideoToInternalStorage(videoUri); // 保存视频
+            if (videoPath != null) {
+                videoView.setVideoPath(videoPath); // 设置视频路径
+                videoView.setVisibility(View.VISIBLE); // 显示VideoView
+                videoView.start(); // 播放视频
+            } else {
+                Toast.makeText(this, "无法保存视频", Toast.LENGTH_SHORT).show();
+            }
         }
     }
+
+
+    private String saveVideoToInternalStorage(Uri videoUri) {
+        Context context = getApplicationContext();
+        File directory = context.getDir("videoDir", Context.MODE_PRIVATE);
+        File videoFile = new File(directory, "diaryVideo.mp4"); // 使用统一的视频文件名
+
+        try (InputStream inputStream = getContentResolver().openInputStream(videoUri);
+             FileOutputStream fos = new FileOutputStream(videoFile)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                fos.write(buffer, 0, length);
+            }
+        } catch (IOException e) {
+            Log.e("DiaryEntryActivity", "Error saving video", e);
+            return null; // 如果保存失败，返回null
+        }
+
+        return videoFile.getAbsolutePath();
+    }
+
 
 
 
@@ -266,8 +289,8 @@ public class DiaryEntryActivity extends AppCompatActivity {
                 if (videoPathIndex != -1) {
                     String path = cursor.getString(videoPathIndex);
                     if (path != null && !path.isEmpty()) {
-                        videoView.setVideoPath(path); // 设置视频路径
-                        videoView.setVisibility(View.VISIBLE); // 显示 VideoView
+                        videoView.setVideoPath(path); // 设定视频路径
+                        videoView.setVisibility(View.VISIBLE); // 显示VideoView
                         videoView.start(); // 开始播放
                     }
                 }
@@ -280,21 +303,19 @@ public class DiaryEntryActivity extends AppCompatActivity {
     }
 
 
-    private String getRealPathFromURI(Uri contentUri) {
-        String[] proj = {MediaStore.Video.Media.DATA};
-        CursorLoader loader = new CursorLoader(this, contentUri, proj, null, null, null);
-        Cursor cursor = loader.loadInBackground();
-
+    private String getRealPathFromURI(Uri uri) {
+        String path = null;
+        String[] projection = {MediaStore.Video.Media.DATA};
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
         if (cursor != null) {
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
             cursor.moveToFirst();
-            String result = cursor.getString(column_index);
+            path = cursor.getString(column_index);
             cursor.close();
-            return result;
         }
-
-        return null; // 如果没有结果，返回 null
+        return path;
     }
+
 
 
     private void saveDiaryEntry() {
