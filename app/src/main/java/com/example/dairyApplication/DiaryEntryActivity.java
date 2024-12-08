@@ -26,10 +26,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.content.CursorLoader;
 
 import com.example.smdiary.R;
 
@@ -54,6 +56,12 @@ public class DiaryEntryActivity extends AppCompatActivity {
     private ImageView imageView;
     private Button pickImageButton;
     private String imagePath;
+    private static final int PICK_VIDEO_REQUEST = 2; // 视频选择请求码
+    private String videoPath; // 保存视频路径
+    private Button pickVideoButton; // 视频选择按钮
+    private VideoView videoView; // 播放视频的视图
+
+
 
 
     @Override
@@ -67,6 +75,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
         // 从Intent中获取用户ID
         userID = intent.getStringExtra("USER_ID");
 
+
         diaryContent = findViewById(R.id.diaryContent);
         diaryTitle = findViewById(R.id.diaryTitle);
         tagSpinner = findViewById(R.id.tagSpinner);
@@ -76,6 +85,12 @@ public class DiaryEntryActivity extends AppCompatActivity {
         Button deleteEntryButton = findViewById(R.id.deleteEntryButton);
         imageView = findViewById(R.id.imageView);
         pickImageButton = findViewById(R.id.pickImageButton);
+
+        pickVideoButton = findViewById(R.id.pickVideoButton); // 初始化选择视频按钮
+        pickVideoButton.setOnClickListener(v -> openVideoChooser()); // 设置点击事件
+        videoView = findViewById(R.id.videoView); // 初始化视频视图
+
+
 
         ArrayAdapter<CharSequence> tagAdapter = ArrayAdapter.createFromResource(this,
                 R.array.tags_array, android.R.layout.simple_spinner_item);
@@ -91,6 +106,8 @@ public class DiaryEntryActivity extends AppCompatActivity {
         // 初始化数据库管理器
         databaseManager = new DatabaseManager(this);
         databaseManager.open();
+
+
 
         // 获取传递的 entryId 参数并加载内容
         entryId = getIntent().getLongExtra("entryId", -1);
@@ -121,6 +138,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
                 saveDiaryEntry();
             }
         });
+
 
         // 删除按钮点击事件
         deleteEntryButton.setOnClickListener(new View.OnClickListener() {
@@ -159,17 +177,38 @@ public class DiaryEntryActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            // 图片选择功能
             Uri imageUri = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
                 imageView.setImageBitmap(bitmap);
-                imagePath = saveImageToInternalStorage(bitmap);
+                imagePath = saveImageToInternalStorage(bitmap); // 保存图像路径
             } catch (IOException e) {
                 Log.e("DiaryEntryActivity", "Error loading image", e);
                 Toast.makeText(this, "无法加载图片", Toast.LENGTH_SHORT).show();
             }
+        } else if (requestCode == PICK_VIDEO_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            // 视频选择功能
+            Uri videoUri = data.getData();
+            videoPath = getRealPathFromURI(videoUri); // 获取视频文件路径
+
+            // 设置视频路径到 VideoView
+            videoView.setVideoURI(videoUri);
+            videoView.setVisibility(View.VISIBLE); // 显示 VideoView
+            videoView.start(); // 自动播放
+            Toast.makeText(this, "视频已选择: " + videoPath, Toast.LENGTH_SHORT).show();
         }
     }
+
+
+
+    private void openVideoChooser() {
+        Intent intent = new Intent();
+        intent.setType("video/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "选择视频"), PICK_VIDEO_REQUEST);
+    }
+
 
     private String saveImageToInternalStorage(Bitmap bitmap) {
         Context context = getApplicationContext();
@@ -184,7 +223,6 @@ public class DiaryEntryActivity extends AppCompatActivity {
         return imageFile.getAbsolutePath();
     }
 
-    // 加载指定 ID 的日记内容
     private void loadDiaryEntry(long entryId) {
         Cursor cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
         if (cursor != null && cursor.moveToFirst()) {
@@ -196,13 +234,22 @@ public class DiaryEntryActivity extends AppCompatActivity {
                 // 确保 COLUMN_IMAGE_PATH 列存在
                 int imagePathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_PATH);
                 if (imagePathIndex != -1) {
-                    String imagePath = cursor.getString(imagePathIndex);
-                    if (imagePath != null) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+                    String path = cursor.getString(imagePathIndex);
+                    if (path != null && !path.isEmpty()) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(path);
                         imageView.setImageBitmap(bitmap);
                     }
-                } else {
-                    Log.e("loadDiaryEntry", "COLUMN_IMAGE_PATH column not found");
+                }
+
+                // 确保 COLUMN_VIDEO_PATH 列存在
+                int videoPathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_VIDEO_PATH);
+                if (videoPathIndex != -1) {
+                    String path = cursor.getString(videoPathIndex);
+                    if (path != null && !path.isEmpty()) {
+                        videoView.setVideoPath(path); // 设置视频路径
+                        videoView.setVisibility(View.VISIBLE); // 显示 VideoView
+                        videoView.start(); // 开始播放
+                    }
                 }
             } catch (IllegalArgumentException e) {
                 Log.e("loadDiaryEntry", "Column not found", e);
@@ -212,12 +259,28 @@ public class DiaryEntryActivity extends AppCompatActivity {
         }
     }
 
-    // 保存日记条目到数据库
+
+    private String getRealPathFromURI(Uri contentUri) {
+        String[] proj = {MediaStore.Video.Media.DATA};
+        CursorLoader loader = new CursorLoader(this, contentUri, proj, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+
+        if (cursor != null) {
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
+            cursor.moveToFirst();
+            String result = cursor.getString(column_index);
+            cursor.close();
+            return result;
+        }
+
+        return null; // 如果没有结果，返回 null
+    }
+
+
     private void saveDiaryEntry() {
         String title = diaryTitle.getText().toString().trim();
         String content = diaryContent.getText().toString().trim();
         String tag = tagSpinner.getSelectedItem().toString();
-        Log.d(userID, "userIBefore " + userID);
 
         // 非空验证
         if (title.isEmpty() || content.isEmpty()) {
@@ -229,9 +292,6 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
         if (entryId == -1) {
             // 新建日记
-            Log.d("DiaryEntry", "ImagePathInsert " + imagePath);
-
-            // 插入新的日记条目
             long newEntryId = databaseManager.insertDiaryEntry(
                     title,
                     content,
@@ -240,7 +300,8 @@ public class DiaryEntryActivity extends AppCompatActivity {
                     "默认位置",
                     1,
                     userID,
-                    imagePath
+                    imagePath,  // 保存图片路径
+                    videoPath   // 添加视频路径
             );
 
             if (newEntryId != -1) {
@@ -254,17 +315,27 @@ public class DiaryEntryActivity extends AppCompatActivity {
             }
         } else {
             // 更新现有日记
-            Log.d("DiaryEntry", "ImagePathUpdate " + imagePath);
-            // 从Intent获取userID
-            userID = getIntent().getStringExtra("USER_ID");
-
             if (imagePath == null || imagePath.isEmpty()) {
+                // 从数据库中获取原图片路径
                 Cursor cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
                 if (cursor != null && cursor.moveToFirst()) {
                     int imagePathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_PATH);
                     if (imagePathIndex != -1) {
                         imagePath = cursor.getString(imagePathIndex);
-                    } cursor.close();
+                    }
+                    cursor.close();
+                }
+            }
+
+            if (videoPath == null || videoPath.isEmpty()) {
+                // 从数据库中获取原视频路径
+                Cursor cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
+                if (cursor != null && cursor.moveToFirst()) {
+                    int videoPathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_VIDEO_PATH);
+                    if (videoPathIndex != -1) {
+                        videoPath = cursor.getString(videoPathIndex);
+                    }
+                    cursor.close();
                 }
             }
 
@@ -278,7 +349,8 @@ public class DiaryEntryActivity extends AppCompatActivity {
                     "默认位置",
                     1,
                     userID,
-                    imagePath
+                    imagePath,  // 更新图片路径
+                    videoPath   // 更新视频路径
             );
 
             if (rowsUpdated > 0) {
@@ -292,6 +364,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
             }
         }
     }
+
 
     // 自定义对话框
     private void showCustomizationDialog() {

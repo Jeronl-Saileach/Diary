@@ -73,19 +73,24 @@ public class DatabaseActivity extends AppCompatActivity {
     private void testInsertDiaryEntry() {
         try {
             databaseManager.open();
+
             String title = "DairyEntry的插入测试";
             String content = "主要的内容是要测试dairyentry中的增方法是否能够正常实现";
-            long date = 20241024;
+            long date = System.currentTimeMillis(); // 使用当前时间戳
             String tags = "测试";
             String location = "四教";
             int categoryId = 1;
-            String UserID = "1";
+            String userID = "2"; // 确保使用适当的用户ID
 
-            // 修改这里，移除 id 参数
-            String imagePath = "";
-            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, tags, location, categoryId,UserID, imagePath);
+            String imagePath = ""; // 设置为适当的图像路径
+            String videoPath = ""; // 设置为适当的视频路径
+
+            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, tags, location, categoryId, userID, imagePath, videoPath);
+
             if (newEntryId != -1) {
                 Toast.makeText(this, "插入成功，ID: " + newEntryId, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "插入失败", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             Log.e("DatabaseActivity", "插入操作错误", e);
@@ -93,6 +98,7 @@ public class DatabaseActivity extends AppCompatActivity {
             databaseManager.close();
         }
     }
+
 
     private void testDeleteById() {
         try {
@@ -132,17 +138,32 @@ public class DatabaseActivity extends AppCompatActivity {
     private void testUpdate() {
         try {
             databaseManager.open();
-            long entryId = 1;  // 需要根据实际情况替换进来的 ID
+            long entryId = 1; // 确保您使用的 ID 是正确的
             String title = "DairyEntry的更新测试";
             String content = "主要的内容是要测试dairyentry中的改方法是否能够正常实现";
-            long date = 20241024;
+            long date = System.currentTimeMillis(); // 使用当前时间戳
             String tags = "测试";
             String location = "四教";
             int categoryId = 2;
-            String id = "3";
+            String userID = "3"; // 确保使用的用户ID
 
-            String imagePath = "";
-            int rowsUpdated = databaseManager.updateDiaryEntry(entryId, title, content, date, tags, location, categoryId,id, imagePath);
+            String imagePath = ""; // 更新时的图片路径
+            String videoPath = ""; // 更新时的视频路径
+
+            // 更新日记条目，确保传入视频路径
+            int rowsUpdated = databaseManager.updateDiaryEntry(
+                    entryId,
+                    title,
+                    content,
+                    date,
+                    tags,
+                    location,
+                    categoryId,
+                    userID,
+                    imagePath,  // 更新图片路径
+                    videoPath   // 更新视频路径
+            );
+
             if (rowsUpdated > 0) {
                 Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
             } else {
@@ -154,6 +175,7 @@ public class DatabaseActivity extends AppCompatActivity {
             databaseManager.close();
         }
     }
+
 
     private void testQueryAllDiaryEntries() {
         try {
