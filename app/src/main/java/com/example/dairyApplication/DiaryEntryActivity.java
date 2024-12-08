@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
@@ -127,7 +128,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
         customizeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showCustomizationDialog();
+                showCustomizationDialog(entryId);
             }
         });
 
@@ -227,10 +228,29 @@ public class DiaryEntryActivity extends AppCompatActivity {
         Cursor cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
         if (cursor != null && cursor.moveToFirst()) {
             try {
+                String fontSize = databaseManager.queryFontSizeByDiaryEntryId(entryId);
+                String fontColor = databaseManager.queryFontColorByDiaryEntryId(entryId);
                 diaryTitle.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TITLE)));
                 diaryContent.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CONTENT)));
                 tagSpinner.setSelection(((ArrayAdapter) tagSpinner.getAdapter()).getPosition(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TAGS))));
-
+                if (fontSize != null) {
+                    switch (fontSize) {
+                        case "小":
+                            diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                            break;
+                        case "中":
+                            diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                            break;
+                        case "大":
+                            diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                            break;
+                    }
+                }
+                if (fontColor != null) {
+                    // 假设fontColor是以"#RRGGBB"格式存储的
+                    int color = Color.parseColor(fontColor);
+                    diaryContent.setTextColor(color);
+                }
                 // 确保 COLUMN_IMAGE_PATH 列存在
                 int imagePathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_PATH);
                 if (imagePathIndex != -1) {
@@ -367,7 +387,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
 
     // 自定义对话框
-    private void showCustomizationDialog() {
+    private void showCustomizationDialog(long entryID) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String[] fontSizes = {"小", "中", "大"};
 
@@ -378,22 +398,25 @@ public class DiaryEntryActivity extends AppCompatActivity {
                         switch (which) {
                             case 0:
                                 diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                                databaseManager.updateDiaryEntryFontSize(entryID,"小");
                                 break;
                             case 1:
                                 diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                                databaseManager.updateDiaryEntryFontSize(entryID,"中");
                                 break;
                             case 2:
                                 diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                                databaseManager.updateDiaryEntryFontSize(entryID,"大");
                                 break;
                         }
-                        showColorDialog();
+                        showColorDialog(entryID);
                     }
                 });
         builder.create().show();
     }
 
     // 颜色选择对话框
-    private void showColorDialog() {
+    private void showColorDialog(long entryID) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("选择文本颜色")
                 .setItems(colors, new DialogInterface.OnClickListener() {
@@ -402,12 +425,15 @@ public class DiaryEntryActivity extends AppCompatActivity {
                         switch (which) {
                             case 0:
                                 color = Color.RED;
+                                databaseManager.updateDiaryEntryFontColor(entryID,"#FF0000");
                                 break;
                             case 1:
                                 color = Color.GREEN;
+                                databaseManager.updateDiaryEntryFontColor(entryID,"#00FF00");
                                 break;
                             case 2:
                                 color = Color.BLUE;
+                                databaseManager.updateDiaryEntryFontColor(entryID,"#0000FF");
                                 break;
                         }
                         applyColorToText(diaryContent.getText(), color);
@@ -416,15 +442,12 @@ public class DiaryEntryActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    // 应用选择的颜色到选中的文本
+    // 应用颜色到所有文本
     private void applyColorToText(Editable text, int color) {
-        int start = diaryContent.getSelectionStart();
-        int end = diaryContent.getSelectionEnd();
-        if (start >= 0 && end > start) {
-            Spannable spannable = new SpannableString(text);
-            spannable.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            diaryContent.setText(spannable);
-        }
+        ForegroundColorSpan colorSpan = new ForegroundColorSpan(color);
+        Spannable spannable = new SpannableString(text);
+        spannable.setSpan(colorSpan, 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        diaryContent.setText(spannable);
     }
 
     @Override

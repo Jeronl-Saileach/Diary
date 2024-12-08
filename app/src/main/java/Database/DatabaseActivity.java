@@ -68,6 +68,14 @@ public class DatabaseActivity extends AppCompatActivity {
                 testQueryDiaryEntries();
             }
         });
+
+        Button updateFontSizeColorButton = findViewById(R.id.testUpdateFontSizeColorButton);
+        updateFontSizeColorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                testUpdateFontSizeAndColor();
+            }
+        });
     }
 
     private void testInsertDiaryEntry() {
@@ -94,6 +102,26 @@ public class DatabaseActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             Log.e("DatabaseActivity", "插入操作错误", e);
+        } finally {
+            databaseManager.close();
+        }
+    }
+    private void testUpdateFontSizeAndColor() {
+        try {
+            databaseManager.open();
+            long entryId = 1; // 要更新的日记条目的ID，根据实际情况替换
+            String fontSize = "16"; // 要设置的字体大小
+            String fontColor = "#FF0000"; // 要设置的字体颜色，例如红色
+
+            int rowsUpdated = databaseManager.updateDiaryEntryFontColor(entryId,fontColor);
+            int rowsUpdatedSize = databaseManager.updateDiaryEntryFontSize(entryId,fontSize);
+            if (rowsUpdated > 0) {
+                Toast.makeText(this, "字体大小和颜色更新成功", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "没有找到要更新的条目", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Log.e("DatabaseActivity", "更新字体大小和颜色时出错", e);
         } finally {
             databaseManager.close();
         }
