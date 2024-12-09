@@ -27,7 +27,7 @@ public class DatabaseManager {
 
     // 关闭数据库连接，释放资源
     public void close() {
-        dbHelper.close();
+        //dbHelper.close();
     }
 
     public long insertDiaryEntry(String title, String content, long date, String tags, String location, int categoryId, String userId, String imagePath, String videoPath) {
@@ -69,7 +69,9 @@ public class DatabaseManager {
         values.put(DatabaseHelper.COLUMN_IMAGE_PATH, imagePath);
         values.put(DatabaseHelper.COLUMN_VIDEO_PATH, videoPath); // 添加视频路径
 
-        return database.update(DatabaseHelper.TABLE_DIARY_ENTRY, values, DatabaseHelper.COLUMN_ENTRY_ID + " = ?", new String[]{String.valueOf(entryId)});
+        int result =  database.update(DatabaseHelper.TABLE_DIARY_ENTRY, values, DatabaseHelper.COLUMN_ENTRY_ID + " = ?", new String[]{String.valueOf(entryId)});
+        close();
+        return result;
     }
 
 

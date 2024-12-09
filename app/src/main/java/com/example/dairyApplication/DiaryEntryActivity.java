@@ -322,6 +322,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
         String title = diaryTitle.getText().toString().trim();
         String content = diaryContent.getText().toString().trim();
         String tag = tagSpinner.getSelectedItem().toString();
+        Log.d(userID, "userIBefore " + userID);
 
         // 非空验证
         if (title.isEmpty() || content.isEmpty()) {
@@ -333,6 +334,9 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
         if (entryId == -1) {
             // 新建日记
+            Log.d("DiaryEntry", "ImagePathInsert " + imagePath);
+
+            // 插入新的日记条目
             long newEntryId = databaseManager.insertDiaryEntry(
                     title,
                     content,
@@ -341,8 +345,8 @@ public class DiaryEntryActivity extends AppCompatActivity {
                     "默认位置",
                     1,
                     userID,
-                    imagePath,  // 保存图片路径
-                    videoPath   // 添加视频路径
+                    imagePath,
+                    videoPath
             );
 
             if (newEntryId != -1) {
@@ -356,29 +360,43 @@ public class DiaryEntryActivity extends AppCompatActivity {
             }
         } else {
             // 更新现有日记
+            Log.d("DiaryEntry", "ImagePathUpdate " + imagePath);
+            // 从Intent获取userID
+            userID = getIntent().getStringExtra("USER_ID");
+
             if (imagePath == null || imagePath.isEmpty()) {
-                // 从数据库中获取原图片路径
-                Cursor cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
-                if (cursor != null && cursor.moveToFirst()) {
-                    int imagePathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_PATH);
-                    if (imagePathIndex != -1) {
-                        imagePath = cursor.getString(imagePathIndex);
+                Cursor cursor = null;
+                try {
+                    cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
+                    if (cursor != null && cursor.moveToFirst()) {
+                        int imagePathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_PATH);
+                        if (imagePathIndex != -1) {
+                            imagePath = cursor.getString(imagePathIndex);
+                        }
                     }
-                    cursor.close();
+                } finally {
+                    if (cursor != null) {
+                        cursor.close(); // 确保关闭 Cursor
+                    }
                 }
             }
 
-            if (videoPath == null || videoPath.isEmpty()) {
-                // 从数据库中获取原视频路径
-                Cursor cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
-                if (cursor != null && cursor.moveToFirst()) {
-                    int videoPathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_VIDEO_PATH);
-                    if (videoPathIndex != -1) {
-                        videoPath = cursor.getString(videoPathIndex);
-                    }
-                    cursor.close();
-                }
-            }
+//            if (videoPath == null || videoPath.isEmpty()) {
+//                Cursor cursor1 = null;
+//                try {
+//                    cursor1 = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
+//                    if (cursor1 != null && cursor1.moveToFirst()) {
+//                        int videoPathIndex = cursor1.getColumnIndex(DatabaseHelper.COLUMN_VIDEO_PATH);
+//                        if (videoPathIndex != -1) {
+//                            videoPath = cursor1.getString(videoPathIndex);
+//                        }
+//                    }
+//                } finally {
+//                    if (cursor1 != null) {
+//                        cursor1.close(); // 确保关闭 Cursor
+//                    }
+//                }
+//            }
 
             // 更新日记条目
             int rowsUpdated = databaseManager.updateDiaryEntry(
@@ -390,8 +408,8 @@ public class DiaryEntryActivity extends AppCompatActivity {
                     "默认位置",
                     1,
                     userID,
-                    imagePath,  // 更新图片路径
-                    videoPath   // 更新视频路径
+                    imagePath,
+                    videoPath
             );
 
             if (rowsUpdated > 0) {
