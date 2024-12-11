@@ -1,4 +1,4 @@
-package com.example.dairyApplication.View;
+package com.example.dairyApplication.Controller;
 
 import android.os.Bundle;
 import android.util.Log;

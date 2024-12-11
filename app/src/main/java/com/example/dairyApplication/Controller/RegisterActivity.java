@@ -1,4 +1,4 @@
-package com.example.dairyApplication.View;
+package com.example.dairyApplication.Controller;
 
 import android.content.ContentValues;
 import android.content.Intent;

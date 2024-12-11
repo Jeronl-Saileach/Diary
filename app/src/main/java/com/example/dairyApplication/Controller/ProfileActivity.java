@@ -1,4 +1,4 @@
-package com.example.dairyApplication.View;
+package com.example.dairyApplication.Controller;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.dairyApplication.View.MainActivity;
 import com.example.smdiary.R;
 
 import java.util.Objects;

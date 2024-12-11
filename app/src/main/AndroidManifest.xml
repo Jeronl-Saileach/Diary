@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DiaryApplication">
 
-        <activity android:name="com.example.dairyApplication.View.LoginActivity"
+        <activity android:name="com.example.dairyApplication.Controller.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,21 +24,21 @@
 
         <activity android:name="com.example.dairyApplication.View.MainActivity"
             android:exported="true" />
-        <activity android:name="com.example.dairyApplication.View.DiaryEntryActivity"
+        <activity android:name="com.example.dairyApplication.Controller.DiaryEntryActivity"
             android:exported="true" />
-        <activity android:name="com.example.dairyApplication.View.SettingsActivity"
+        <activity android:name="com.example.dairyApplication.Controller.SettingsActivity"
             android:exported="true" />
-        <activity android:name="com.example.dairyApplication.View.ProfileActivity"
+        <activity android:name="com.example.dairyApplication.Controller.ProfileActivity"
             android:exported="true" />
         <activity android:name="com.example.dairyApplication.Model.testDatabase"
             android:exported="true" />
-        <activity android:name="com.example.dairyApplication.View.RegisterActivity"
+        <activity android:name="com.example.dairyApplication.Controller.RegisterActivity"
             android:exported="true" />
         <activity android:name="com.example.dairyApplication.Controller.DatabaseActivity"
             android:exported="true" />
 
         <!-- 添加 ChangePasswordActivity 的声明 -->
-        <activity android:name="com.example.dairyApplication.View.ChangePasswordActivity"
+        <activity android:name="com.example.dairyApplication.Controller.ChangePasswordActivity"
             android:exported="true" />
 
     </application>
