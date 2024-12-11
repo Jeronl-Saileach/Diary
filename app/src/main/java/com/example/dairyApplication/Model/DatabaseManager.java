@@ -1,4 +1,4 @@
-package Database;
+package com.example.dairyApplication.Model;
 
 import android.content.ContentValues;
 import android.content.Context;

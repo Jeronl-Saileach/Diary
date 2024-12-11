@@ -1,4 +1,4 @@
-package Database;
+package com.example.dairyApplication.Model;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -7,9 +7,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.smdiary.R;
 
-public class DatabaseActivity extends AppCompatActivity {
+public class testDatabase extends AppCompatActivity {
 
     private DatabaseManager databaseManager;
 
@@ -68,14 +69,6 @@ public class DatabaseActivity extends AppCompatActivity {
                 testQueryDiaryEntries();
             }
         });
-
-        Button updateFontSizeColorButton = findViewById(R.id.testUpdateFontSizeColorButton);
-        updateFontSizeColorButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                testUpdateFontSizeAndColor();
-            }
-        });
     }
 
     private void testInsertDiaryEntry() {
@@ -88,12 +81,12 @@ public class DatabaseActivity extends AppCompatActivity {
             String tags = "测试";
             String location = "四教";
             int categoryId = 1;
-            String userID = "2"; // 确保使用适当的用户ID
+            String userId = "2"; // 根据上下文来定义用户ID
 
-            String imagePath = ""; // 设置为适当的图像路径
-            String videoPath = ""; // 设置为适当的视频路径
+            String imagePath = ""; // 设置为图片路径，例如："/path/to/image"
+            String videoPath = ""; // 设置为视频路径，例如："/path/to/video"
 
-            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, tags, location, categoryId, userID, imagePath, videoPath);
+            long newEntryId = databaseManager.insertDiaryEntry(title, content, date, tags, location, categoryId, userId, imagePath, videoPath);
 
             if (newEntryId != -1) {
                 Toast.makeText(this, "插入成功，ID: " + newEntryId, Toast.LENGTH_SHORT).show();
@@ -106,32 +99,11 @@ public class DatabaseActivity extends AppCompatActivity {
             databaseManager.close();
         }
     }
-    private void testUpdateFontSizeAndColor() {
-        try {
-            databaseManager.open();
-            long entryId = 1; // 要更新的日记条目的ID，根据实际情况替换
-            String fontSize = "16"; // 要设置的字体大小
-            String fontColor = "#FF0000"; // 要设置的字体颜色，例如红色
-
-            int rowsUpdated = databaseManager.updateDiaryEntryFontColor(entryId,fontColor);
-            int rowsUpdatedSize = databaseManager.updateDiaryEntryFontSize(entryId,fontSize);
-            if (rowsUpdated > 0) {
-                Toast.makeText(this, "字体大小和颜色更新成功", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "没有找到要更新的条目", Toast.LENGTH_SHORT).show();
-            }
-        } catch (Exception e) {
-            Log.e("DatabaseActivity", "更新字体大小和颜色时出错", e);
-        } finally {
-            databaseManager.close();
-        }
-    }
-
 
     private void testDeleteById() {
         try {
             databaseManager.open();
-            long entryId = 1;  // 需要根据实际情况替换进来的 ID
+            long entryId = 1; // 确保您使用的 ID 是正确的
             int rowsDeleted = databaseManager.deleteDiaryEntryById(entryId);
             if (rowsDeleted > 0) {
                 Toast.makeText(this, "ID删除成功", Toast.LENGTH_SHORT).show();
@@ -173,12 +145,11 @@ public class DatabaseActivity extends AppCompatActivity {
             String tags = "测试";
             String location = "四教";
             int categoryId = 2;
-            String userID = "3"; // 确保使用的用户ID
+            String userId = "3"; // 使用适当的用户ID
 
-            String imagePath = ""; // 更新时的图片路径
-            String videoPath = ""; // 更新时的视频路径
+            String imagePath = ""; // 更新时的图片路径，例如："/path/to/image"
+            String videoPath = ""; // 更新时的 视频路径，例如："/path/to/video"
 
-            // 更新日记条目，确保传入视频路径
             int rowsUpdated = databaseManager.updateDiaryEntry(
                     entryId,
                     title,
@@ -187,7 +158,7 @@ public class DatabaseActivity extends AppCompatActivity {
                     tags,
                     location,
                     categoryId,
-                    userID,
+                    userId,
                     imagePath,  // 更新图片路径
                     videoPath   // 更新视频路径
             );
@@ -246,12 +217,4 @@ public class DatabaseActivity extends AppCompatActivity {
             databaseManager.close();
         }
     }
-
-
-
-    private void testCheckingDiaryEntries(){
-
-    }
-
-
 }

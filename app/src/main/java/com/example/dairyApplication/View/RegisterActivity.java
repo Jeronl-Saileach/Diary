@@ -1,11 +1,10 @@
-package com.example.dairyApplication;
+package com.example.dairyApplication.View;
 
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -16,7 +15,7 @@ import com.example.smdiary.R;
 
 import java.util.Objects;
 
-import Database.DatabaseHelper;
+import com.example.dairyApplication.Model.DatabaseHelper;
 
 public class RegisterActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.example.dairyApplication;
+package com.example.dairyApplication.View;
 
 import android.content.Intent;
 import android.net.Uri;

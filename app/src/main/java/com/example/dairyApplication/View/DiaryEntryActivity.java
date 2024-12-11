@@ -1,12 +1,9 @@
-package com.example.dairyApplication;
+package com.example.dairyApplication.View;
 
-import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -32,7 +29,6 @@ import android.widget.VideoView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.loader.content.CursorLoader;
 
 import com.example.smdiary.R;
 
@@ -42,8 +38,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-import Database.DatabaseHelper;
-import Database.DatabaseManager;
+import com.example.dairyApplication.Model.DatabaseHelper;
+import com.example.dairyApplication.Model.DatabaseManager;
 
 public class DiaryEntryActivity extends AppCompatActivity {
 

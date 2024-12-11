@@ -1,4 +1,4 @@
-package com.example.dairyApplication;
+package com.example.dairyApplication.Controller;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import Database.DatabaseHelper;
+import com.example.dairyApplication.Model.DatabaseHelper;
 
 public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHolder> {
 

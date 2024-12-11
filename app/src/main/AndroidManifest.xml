@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DiaryApplication">
 
-        <activity android:name="com.example.dairyApplication.LoginActivity"
+        <activity android:name="com.example.dairyApplication.View.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,23 +22,23 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.example.dairyApplication.MainActivity"
+        <activity android:name="com.example.dairyApplication.View.MainActivity"
             android:exported="true" />
-        <activity android:name="com.example.dairyApplication.DiaryEntryActivity"
+        <activity android:name="com.example.dairyApplication.View.DiaryEntryActivity"
             android:exported="true" />
-        <activity android:name="com.example.dairyApplication.SettingsActivity"
+        <activity android:name="com.example.dairyApplication.View.SettingsActivity"
             android:exported="true" />
-        <activity android:name="com.example.dairyApplication.ProfileActivity"
+        <activity android:name="com.example.dairyApplication.View.ProfileActivity"
             android:exported="true" />
-        <activity android:name="com.example.dairyApplication.testDatabase"
+        <activity android:name="com.example.dairyApplication.Model.testDatabase"
             android:exported="true" />
-        <activity android:name="com.example.dairyApplication.RegisterActivity"
+        <activity android:name="com.example.dairyApplication.View.RegisterActivity"
             android:exported="true" />
-        <activity android:name="Database.DatabaseActivity"
+        <activity android:name="com.example.dairyApplication.Controller.DatabaseActivity"
             android:exported="true" />
 
         <!-- 添加 ChangePasswordActivity 的声明 -->
-        <activity android:name="com.example.dairyApplication.ChangePasswordActivity"
+        <activity android:name="com.example.dairyApplication.View.ChangePasswordActivity"
             android:exported="true" />
 
     </application>

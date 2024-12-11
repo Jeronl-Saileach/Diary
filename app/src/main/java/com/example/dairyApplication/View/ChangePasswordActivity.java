@@ -1,6 +1,5 @@
-package com.example.dairyApplication;
+package com.example.dairyApplication.View;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -11,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.smdiary.R;
 
-import Database.DatabaseManager;
+import com.example.dairyApplication.Model.DatabaseManager;
 
 public class ChangePasswordActivity extends AppCompatActivity {
 
