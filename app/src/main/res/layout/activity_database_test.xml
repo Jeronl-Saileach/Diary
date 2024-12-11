@@ -41,4 +41,10 @@
         android:layout_height="wrap_content"
         android:text="queryDiaryEntries" />
 
+    <Button
+        android:id="@+id/testUpdateFontSizeColorButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Update Font Size and Color" />
+
 </LinearLayout>

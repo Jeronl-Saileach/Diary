@@ -11,7 +11,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // 数据库名字及版本
     private static final String DATABASE_NAME = "diary.db";
-    private static final int DATABASE_VERSION = 11; // 升级版本号以适应数据库结构的变化
+    private static final int DATABASE_VERSION = 13; // 升级版本号以适应数据库结构的变化
 
     // DiaryEntry 表常量
     public static final String TABLE_DIARY_ENTRY = "DiaryEntry";
@@ -24,6 +24,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CATEGORY_ID = "CategoryID";
     public static final String COLUMN_IMAGE_PATH = "ImagePath";
     public static final String COLUMN_USER_ID_FK = "UserID"; // 新增的UserID外键
+    public  static  final String FONT_SIZE = "FontSize";
+    public  static  final  String FONT_COLOR = "FontColor";
 
     // Media 表常量
     public static final String TABLE_MEDIA = "Media";
@@ -56,6 +58,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_IMAGE_PATH + " TEXT, "
             + COLUMN_VIDEO_PATH + " TEXT, " // 添加视频路径
             + COLUMN_USER_ID_FK + " TEXT, "
+            + FONT_SIZE + " TEXT DEFAULT 'small', " // 新增的字体大小字段，并设置默认值为'small'
+            + FONT_COLOR + " TEXT DEFAULT 'black', " // 新增的字体颜色字段，并设置默认值为'black'
             + "FOREIGN KEY(" + COLUMN_CATEGORY_ID + ") REFERENCES "
             + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY_ID + "), "
             + "FOREIGN KEY(" + COLUMN_USER_ID_FK + ") REFERENCES "
@@ -73,7 +77,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_CATEGORIES = "CREATE TABLE " + TABLE_CATEGORIES + " ("
             + COLUMN_CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + COLUMN_CATEGORY_NAME + " TEXT)";
-    // 移除了UserID外键相关的代码
+
 
     private static final String CREATE_USER_SETTINGS = "CREATE TABLE " + TABLE_USER_SETTINGS + " ("
             + COLUMN_USER_ID + " TEXT PRIMARY KEY, "

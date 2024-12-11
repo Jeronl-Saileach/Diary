@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
@@ -38,6 +39,7 @@ import com.example.smdiary.R;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
 import Database.DatabaseHelper;
@@ -127,7 +129,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
         customizeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showCustomizationDialog();
+                showCustomizationDialog(entryId);
             }
         });
 
@@ -188,17 +190,39 @@ public class DiaryEntryActivity extends AppCompatActivity {
                 Toast.makeText(this, "无法加载图片", Toast.LENGTH_SHORT).show();
             }
         } else if (requestCode == PICK_VIDEO_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            // 视频选择功能
-            Uri videoUri = data.getData();
-            videoPath = getRealPathFromURI(videoUri); // 获取视频文件路径
-
-            // 设置视频路径到 VideoView
-            videoView.setVideoURI(videoUri);
-            videoView.setVisibility(View.VISIBLE); // 显示 VideoView
-            videoView.start(); // 自动播放
-            Toast.makeText(this, "视频已选择: " + videoPath, Toast.LENGTH_SHORT).show();
+            Uri videoUri = data.getData(); // 获取选中的视频URI
+            videoPath = saveVideoToInternalStorage(videoUri); // 保存视频
+            if (videoPath != null) {
+                videoView.setVideoPath(videoPath); // 设置视频路径
+                videoView.setVisibility(View.VISIBLE); // 显示VideoView
+                videoView.start(); // 播放视频
+            } else {
+                Toast.makeText(this, "无法保存视频", Toast.LENGTH_SHORT).show();
+            }
         }
     }
+
+
+    private String saveVideoToInternalStorage(Uri videoUri) {
+        Context context = getApplicationContext();
+        File directory = context.getDir("videoDir", Context.MODE_PRIVATE);
+        File videoFile = new File(directory, "diaryVideo.mp4"); // 使用统一的视频文件名
+
+        try (InputStream inputStream = getContentResolver().openInputStream(videoUri);
+             FileOutputStream fos = new FileOutputStream(videoFile)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                fos.write(buffer, 0, length);
+            }
+        } catch (IOException e) {
+            Log.e("DiaryEntryActivity", "Error saving video", e);
+            return null; // 如果保存失败，返回null
+        }
+
+        return videoFile.getAbsolutePath();
+    }
+
 
 
 
@@ -227,10 +251,29 @@ public class DiaryEntryActivity extends AppCompatActivity {
         Cursor cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
         if (cursor != null && cursor.moveToFirst()) {
             try {
+                String fontSize = databaseManager.queryFontSizeByDiaryEntryId(entryId);
+                String fontColor = databaseManager.queryFontColorByDiaryEntryId(entryId);
                 diaryTitle.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TITLE)));
                 diaryContent.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CONTENT)));
                 tagSpinner.setSelection(((ArrayAdapter) tagSpinner.getAdapter()).getPosition(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TAGS))));
-
+                if (fontSize != null) {
+                    switch (fontSize) {
+                        case "小":
+                            diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                            break;
+                        case "中":
+                            diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                            break;
+                        case "大":
+                            diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                            break;
+                    }
+                }
+                if (fontColor != null) {
+                    // 假设fontColor是以"#RRGGBB"格式存储的
+                    int color = Color.parseColor(fontColor);
+                    diaryContent.setTextColor(color);
+                }
                 // 确保 COLUMN_IMAGE_PATH 列存在
                 int imagePathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_PATH);
                 if (imagePathIndex != -1) {
@@ -246,8 +289,8 @@ public class DiaryEntryActivity extends AppCompatActivity {
                 if (videoPathIndex != -1) {
                     String path = cursor.getString(videoPathIndex);
                     if (path != null && !path.isEmpty()) {
-                        videoView.setVideoPath(path); // 设置视频路径
-                        videoView.setVisibility(View.VISIBLE); // 显示 VideoView
+                        videoView.setVideoPath(path); // 设定视频路径
+                        videoView.setVisibility(View.VISIBLE); // 显示VideoView
                         videoView.start(); // 开始播放
                     }
                 }
@@ -260,27 +303,26 @@ public class DiaryEntryActivity extends AppCompatActivity {
     }
 
 
-    private String getRealPathFromURI(Uri contentUri) {
-        String[] proj = {MediaStore.Video.Media.DATA};
-        CursorLoader loader = new CursorLoader(this, contentUri, proj, null, null, null);
-        Cursor cursor = loader.loadInBackground();
-
+    private String getRealPathFromURI(Uri uri) {
+        String path = null;
+        String[] projection = {MediaStore.Video.Media.DATA};
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
         if (cursor != null) {
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
             cursor.moveToFirst();
-            String result = cursor.getString(column_index);
+            path = cursor.getString(column_index);
             cursor.close();
-            return result;
         }
-
-        return null; // 如果没有结果，返回 null
+        return path;
     }
+
 
 
     private void saveDiaryEntry() {
         String title = diaryTitle.getText().toString().trim();
         String content = diaryContent.getText().toString().trim();
         String tag = tagSpinner.getSelectedItem().toString();
+        Log.d(userID, "userIBefore " + userID);
 
         // 非空验证
         if (title.isEmpty() || content.isEmpty()) {
@@ -292,6 +334,9 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
         if (entryId == -1) {
             // 新建日记
+            Log.d("DiaryEntry", "ImagePathInsert " + imagePath);
+
+            // 插入新的日记条目
             long newEntryId = databaseManager.insertDiaryEntry(
                     title,
                     content,
@@ -300,8 +345,8 @@ public class DiaryEntryActivity extends AppCompatActivity {
                     "默认位置",
                     1,
                     userID,
-                    imagePath,  // 保存图片路径
-                    videoPath   // 添加视频路径
+                    imagePath,
+                    videoPath
             );
 
             if (newEntryId != -1) {
@@ -315,27 +360,41 @@ public class DiaryEntryActivity extends AppCompatActivity {
             }
         } else {
             // 更新现有日记
+            Log.d("DiaryEntry", "ImagePathUpdate " + imagePath);
+            // 从Intent获取userID
+            userID = getIntent().getStringExtra("USER_ID");
+
             if (imagePath == null || imagePath.isEmpty()) {
-                // 从数据库中获取原图片路径
-                Cursor cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
-                if (cursor != null && cursor.moveToFirst()) {
-                    int imagePathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_PATH);
-                    if (imagePathIndex != -1) {
-                        imagePath = cursor.getString(imagePathIndex);
+                Cursor cursor = null;
+                try {
+                    cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
+                    if (cursor != null && cursor.moveToFirst()) {
+                        int imagePathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_PATH);
+                        if (imagePathIndex != -1) {
+                            imagePath = cursor.getString(imagePathIndex);
+                        }
                     }
-                    cursor.close();
+                } finally {
+                    if (cursor != null) {
+                        cursor.close(); // 确保关闭 Cursor
+                    }
                 }
             }
 
             if (videoPath == null || videoPath.isEmpty()) {
-                // 从数据库中获取原视频路径
-                Cursor cursor = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
-                if (cursor != null && cursor.moveToFirst()) {
-                    int videoPathIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_VIDEO_PATH);
-                    if (videoPathIndex != -1) {
-                        videoPath = cursor.getString(videoPathIndex);
+                Cursor cursor1 = null;
+                try {
+                    cursor1 = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
+                    if (cursor1 != null && cursor1.moveToFirst()) {
+                        int videoPathIndex = cursor1.getColumnIndex(DatabaseHelper.COLUMN_VIDEO_PATH);
+                        if (videoPathIndex != -1) {
+                            videoPath = cursor1.getString(videoPathIndex);
+                        }
                     }
-                    cursor.close();
+                } finally {
+                    if (cursor1 != null) {
+                        cursor1.close(); // 确保关闭 Cursor
+                    }
                 }
             }
 
@@ -349,8 +408,8 @@ public class DiaryEntryActivity extends AppCompatActivity {
                     "默认位置",
                     1,
                     userID,
-                    imagePath,  // 更新图片路径
-                    videoPath   // 更新视频路径
+                    imagePath,
+                    videoPath
             );
 
             if (rowsUpdated > 0) {
@@ -367,7 +426,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
 
     // 自定义对话框
-    private void showCustomizationDialog() {
+    private void showCustomizationDialog(long entryID) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String[] fontSizes = {"小", "中", "大"};
 
@@ -378,22 +437,25 @@ public class DiaryEntryActivity extends AppCompatActivity {
                         switch (which) {
                             case 0:
                                 diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                                databaseManager.updateDiaryEntryFontSize(entryID,"小");
                                 break;
                             case 1:
                                 diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                                databaseManager.updateDiaryEntryFontSize(entryID,"中");
                                 break;
                             case 2:
                                 diaryContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                                databaseManager.updateDiaryEntryFontSize(entryID,"大");
                                 break;
                         }
-                        showColorDialog();
+                        showColorDialog(entryID);
                     }
                 });
         builder.create().show();
     }
 
     // 颜色选择对话框
-    private void showColorDialog() {
+    private void showColorDialog(long entryID) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("选择文本颜色")
                 .setItems(colors, new DialogInterface.OnClickListener() {
@@ -402,12 +464,15 @@ public class DiaryEntryActivity extends AppCompatActivity {
                         switch (which) {
                             case 0:
                                 color = Color.RED;
+                                databaseManager.updateDiaryEntryFontColor(entryID,"#FF0000");
                                 break;
                             case 1:
                                 color = Color.GREEN;
+                                databaseManager.updateDiaryEntryFontColor(entryID,"#00FF00");
                                 break;
                             case 2:
                                 color = Color.BLUE;
+                                databaseManager.updateDiaryEntryFontColor(entryID,"#0000FF");
                                 break;
                         }
                         applyColorToText(diaryContent.getText(), color);
@@ -416,15 +481,12 @@ public class DiaryEntryActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    // 应用选择的颜色到选中的文本
+    // 应用颜色到所有文本
     private void applyColorToText(Editable text, int color) {
-        int start = diaryContent.getSelectionStart();
-        int end = diaryContent.getSelectionEnd();
-        if (start >= 0 && end > start) {
-            Spannable spannable = new SpannableString(text);
-            spannable.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            diaryContent.setText(spannable);
-        }
+        ForegroundColorSpan colorSpan = new ForegroundColorSpan(color);
+        Spannable spannable = new SpannableString(text);
+        spannable.setSpan(colorSpan, 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        diaryContent.setText(spannable);
     }
 
     @Override
