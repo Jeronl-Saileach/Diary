@@ -381,22 +381,22 @@ public class DiaryEntryActivity extends AppCompatActivity {
                 }
             }
 
-//            if (videoPath == null || videoPath.isEmpty()) {
-//                Cursor cursor1 = null;
-//                try {
-//                    cursor1 = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
-//                    if (cursor1 != null && cursor1.moveToFirst()) {
-//                        int videoPathIndex = cursor1.getColumnIndex(DatabaseHelper.COLUMN_VIDEO_PATH);
-//                        if (videoPathIndex != -1) {
-//                            videoPath = cursor1.getString(videoPathIndex);
-//                        }
-//                    }
-//                } finally {
-//                    if (cursor1 != null) {
-//                        cursor1.close(); // 确保关闭 Cursor
-//                    }
-//                }
-//            }
+            if (videoPath == null || videoPath.isEmpty()) {
+                Cursor cursor1 = null;
+                try {
+                    cursor1 = databaseManager.queryDiaryEntries("entryId = ?", new String[]{String.valueOf(entryId)});
+                    if (cursor1 != null && cursor1.moveToFirst()) {
+                        int videoPathIndex = cursor1.getColumnIndex(DatabaseHelper.COLUMN_VIDEO_PATH);
+                        if (videoPathIndex != -1) {
+                            videoPath = cursor1.getString(videoPathIndex);
+                        }
+                    }
+                } finally {
+                    if (cursor1 != null) {
+                        cursor1.close(); // 确保关闭 Cursor
+                    }
+                }
+            }
 
             // 更新日记条目
             int rowsUpdated = databaseManager.updateDiaryEntry(
