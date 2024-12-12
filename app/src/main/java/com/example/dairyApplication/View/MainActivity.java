@@ -11,9 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dairyApplication.Controller.DiaryAdapter;
-import com.example.dairyApplication.Controller.DiaryEntryActivity;
-import com.example.dairyApplication.Controller.ProfileActivity;
-import com.example.dairyApplication.Controller.SettingsActivity;
 import com.example.smdiary.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 

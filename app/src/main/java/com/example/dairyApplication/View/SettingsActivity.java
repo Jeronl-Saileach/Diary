@@ -1,4 +1,4 @@
-package com.example.dairyApplication.Controller;
+package com.example.dairyApplication.View;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.content.CursorLoader;
 
 import com.example.dairyApplication.Model.DatabaseManager;
-import com.example.dairyApplication.View.MainActivity;
 import com.example.smdiary.R;
 
 import java.util.Objects;

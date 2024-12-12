@@ -1,4 +1,4 @@
-package com.example.dairyApplication.Controller;
+package com.example.dairyApplication.View;
 
 import android.content.Context;
 import android.content.DialogInterface;

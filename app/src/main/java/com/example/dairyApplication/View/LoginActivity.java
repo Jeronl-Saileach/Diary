@@ -1,4 +1,4 @@
-package com.example.dairyApplication.Controller;
+package com.example.dairyApplication.View;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.dairyApplication.View.MainActivity;
 import com.example.smdiary.R;
 
 import com.example.dairyApplication.Model.DatabaseHelper;
