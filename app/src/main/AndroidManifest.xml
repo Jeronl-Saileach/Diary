@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.example.dairyApplication.View.MainActivity"
+        <activity android:name="com.example.dairyApplication.Controller.MainActivity"
             android:exported="true" />
         <activity android:name="com.example.dairyApplication.Controller.DiaryEntryActivity"
             android:exported="true" />

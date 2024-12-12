@@ -1,4 +1,4 @@
-package com.example.dairyApplication.View;
+package com.example.dairyApplication.Controller;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.dairyApplication.Controller.DiaryAdapter;
+import com.example.dairyApplication.View.DiaryAdapter;
 import com.example.smdiary.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
